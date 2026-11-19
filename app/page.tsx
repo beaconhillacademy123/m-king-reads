@@ -56,7 +56,8 @@ export default async function Home() {
       if (item && !seen.has(item.key) && woven.length < 36) { seen.add(item.key); woven.push(item); }
     }
   }
-  const marqueeRows = [woven.filter((_, i) => i % 2 === 0), woven.filter((_, i) => i % 2 === 1)];
+  // Alternate which row starts each group of four, so both rows mix storybooks, Nigerian books and classics.
+  const marqueeRows = [woven.filter((_, i) => (i + Math.floor(i / 4)) % 2 === 0), woven.filter((_, i) => (i + Math.floor(i / 4)) % 2 === 1)];
 
   const rails: { title: string; kicker: string; href: string; slugs: string[] }[] = [
     { title: 'Mystery & suspense', kicker: 'PAGE-TURNERS', href: '/genre/mystery', slugs: ['mystery'] },
