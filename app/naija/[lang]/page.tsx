@@ -36,7 +36,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
         <h1>{l.name}</h1>
         {l.hello && <p className="langHello">{l.hello} <span>— {l.helloEn}</span></p>}
         <nav className="row">
-          {lang === 'enu' ? <a className="pill" href="#dictionary">Dictionary</a> : <a className="pill" href="#phrases">Phrases</a>}
+          {lang === 'enu' ? <><a className="pill" href="#dictionary">Dictionary</a><a className="pill" href="#kitchen">Kitchen dictionary</a></> : <a className="pill" href="#phrases">Phrases</a>}
           {stories.length > 0 && <a className="pill" href="#stories">Storybooks ({stories.length})</a>}
           {lessons.length > 0 && <a className="pill" href="#learn">Learn to speak ({lessons.length})</a>}
           {heritage.length > 0 && <a className="pill" href="#heritage">Heritage books</a>}
@@ -46,9 +46,9 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
 
       {lang === 'enu' ? (
         <section id="dictionary" className="card">
-          <div className="cardHead"><h3>Enuani–English dictionary & sayings</h3><span className="dim small">{dictionary.length} sourced entries</span></div>
+          <div className="cardHead"><h3>Enuani–English dictionary & sayings</h3><span className="dim small">{dictionary.filter(entry => entry.category !== 'kitchen').length} sourced entries</span></div>
           <p className="dim dictionaryIntro">Search in either direction: Enuani to English or English to Enuani. Explore sourced vocabulary, proverbs and real-life usage examples.</p>
-          <DictionarySearch entries={dictionary} />
+          <DictionarySearch entries={dictionary.filter(entry => entry.category !== 'kitchen')} />
           <div className="enuaniGuide">
             <h3>Enuani pronunciation & writing notes</h3>
             <p>Enuani is tonal, and local speech varies between communities. These starter notes follow the Atụtụ inu Enuani reference; they are not a substitute for a speaker’s pronunciation.</p>
@@ -60,6 +60,17 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
             <p className="fine">Reference: <a href="https://enuani.squarespace.com/content" target="_blank" rel="noreferrer">Atụtụ inu — Enuani phonetics and orthography</a>. Spellings and usage can vary by town.</p>
           </div>
         </section>
+          <section id="kitchen" className="card enuaniKitchen">
+            <div className="cardHead"><h3>Enuani kitchen dictionary</h3><span className="dim small">{dictionary.filter(entry => entry.category === 'kitchen').length} sourced terms</span></div>
+            <p className="dim dictionaryIntro">Food, ingredients, traditional dishes and the words used when preparing and eating food. Search in Enuani or English.</p>
+            <div className="kitchenGroups">
+              <span className="pill">Food & ingredients</span>
+              <span className="pill">Soups & dishes</span>
+              <span className="pill">Cooking actions</span>
+            </div>
+            <DictionarySearch entries={dictionary.filter(entry => entry.category === 'kitchen')} />
+            <p className="fine">Entries are drawn from Enuani cultural and linguistic references. Kitchen-tool names will be added only when their Enuani forms can be checked.</p>
+          </section>
       ) : (
               <section id="phrases" className="card">
         <div className="cardHead"><h3>Everyday phrases</h3><span className="dim small">Free for everyone</span></div>
