@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { BookOpen, ChevronRight, Crown, Headphones, Download, Sparkles, Globe2, Feather, PenLine } from 'lucide-react';
-import { LANGS } from '../lib/naija';
+import { LANGS, getStories } from '../lib/naija';
+import HeroMarquee, { type MarqueeItem } from './components/HeroMarquee';
 import { getPublishedNovels, langName } from '../lib/novels';
 import { AUDIENCES, forAudience, getCatalogue, getGenres, getGenre, type Book } from '../lib/booknest';
 import Rail from './components/Rail';
@@ -16,50 +17,46 @@ function bySlugs(books: Book[], slugs: string[]) {
   return books.filter(b => slugs.includes(getGenre(b)?.slug ?? ''));
 }
 
-/**
- * The welcome book. A hand-picked rotation of page-turners, each with its own hook,
- * opening with Olaudah Equiano: the Igbo boy who was kidnapped, bought his freedom and wrote it all down.
- */
-const HEADLINERS: { id: string; kicker: string; title?: string; hook: string }[] = [
-  { id: '969a850d-1c54-4e5b-a78b-1be413fe90b3', kicker: 'A TRUE NIGERIAN STORY', title: 'The Interesting Narrative of Olaudah Equiano',
-    hook: 'Kidnapped from his Igbo village at eleven and sold across the ocean, he survived wars, storms and slavery, bought his own freedom, and wrote the bestseller that helped end the slave trade.' },
-  { id: 'c9f1aa4c-3e10-4c2f-b2f6-584031808a71', kicker: 'READ IT WITH THE LIGHTS ON',
-    hook: 'A young lawyer travels to a castle in Transylvania. His host never eats, never sleeps and casts no reflection, and the doors lock from the outside.' },
-  { id: '7937861f-a638-4328-83bf-6dbb33dc512f', kicker: 'THE ORIGINAL DETECTIVE',
-    hook: 'Twelve impossible cases. One man who notices what everyone else misses. Can you solve them before Sherlock Holmes does?' },
-  { id: 'c4916927-a9ca-40cb-8a9a-53aeb5bd896e', kicker: 'TALES FROM HOME',
-    hook: 'Tortoise, tricksters, kings and spirits: forty folk tales from the Ikom people of Cross River, written down more than a hundred years ago.' },
-  { id: '7d855d87-143d-4cff-98f3-634d48a41a88', kicker: 'THE GREATEST REVENGE STORY EVER',
-    hook: 'Betrayed on his wedding day and locked away for fourteen years, Edmond Dantès escapes with a hidden fortune and a perfect plan.' },
-  { id: 'c67fa83b-7975-4afa-a91c-b9d5d9da8d3c', kicker: '2,500 YEARS OF WINNING',
-    hook: 'The short, ruthless playbook that generals, CEOs and hustlers still use to win without fighting.' },
-  { id: '57688156-24a3-4a2f-a38f-f17ac32c072e', kicker: 'THE ORIGINAL ENEMIES-TO-LOVERS',
-    hook: 'She judges him too fast. He is too proud to explain. Two hundred years later, readers still cannot put it down.' },
-  { id: '4883095d-a407-42f9-ad02-117b812747de', kicker: 'THE FIRST SCIENCE FICTION',
-    hook: 'A brilliant student builds a living man from the dead, then runs from what he has made. His creation follows.' },
-  { id: '1fdbe288-13fd-4a92-b699-dd9d6a5f4f13', kicker: "AN EMPEROR'S PRIVATE DIARY",
-    hook: 'The most powerful man in Rome wrote notes to himself on staying calm, humble and strong. Read them over his shoulder.' },
-];
-
-/** Days since the launch of this lineup, so it opens on Equiano and moves on one book a day. */
-function headlinerIndex(len: number) {
-  const day = Math.floor((Date.now() + 3600_000) / 86_400_000) - Math.floor(Date.UTC(2026, 10, 19) / 86_400_000);
-  return ((day % len) + len) % len;
+/** Small seeded shuffle so the cover wall changes every day but stays stable within a day. */
+function dailyShuffle<T>(items: T[], salt: number): T[] {
+  let seed = (Math.floor((Date.now() + 3600_000) / 86_400_000) * 7919 + salt) >>> 0;
+  const rand = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rand() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }
 
-function dayIndex(len: number) {
-  const d = new Date();
-  return len ? (d.getUTCFullYear() * 372 + d.getUTCMonth() * 31 + d.getUTCDate()) % len : 0;
-}
+const LANG_TAG: Record<string, string> = { yo: 'Yorùbá', ha: 'Hausa', ig: 'Igbo', pcm: 'Pidgin', en: 'English' };
 
 export default async function Home() {
-  const [books, genres, novels] = await Promise.all([getCatalogue(), getGenres(), getPublishedNovels({ limit: 16 })]);
+  const [books, genres, novels, stories] = await Promise.all([getCatalogue(), getGenres(), getPublishedNovels({ limit: 16 }), getStories().catch(() => [])]);
   const featured = books.filter(b => b.is_featured);
-  const lineup = HEADLINERS.map(h => ({ h, book: books.find(b => b.id === h.id) })).filter((x): x is { h: (typeof HEADLINERS)[number]; book: Book } => !!x.book);
-  const pick = lineup.length ? lineup[headlinerIndex(lineup.length)] : null;
-  const spotlight = pick?.book ?? featured[dayIndex(featured.length)] ?? books[0];
-  const heroStack = (lineup.length ? lineup.map(x => x.book) : featured).filter(b => b.id !== spotlight?.id).slice(0, 4);
-  const spotlightGenre = spotlight ? getGenre(spotlight) : null;
+  // Cover wall: Naija-language storybooks, Nigerian & African books, new Naija novels and world classics, woven together.
+  const naijaStories: MarqueeItem[] = dailyShuffle(stories.filter(st => st.cover_url), 1).map(st => ({
+    key: `s-${st.id}`, href: `/naija/story/${st.id}`, title: st.title, cover: st.cover_url, tag: LANG_TAG[st.lang] ?? st.lang, picture: true, lang: st.lang,
+  }));
+  const african: MarqueeItem[] = dailyShuffle(bySlugs(books, ['african-literature']), 2).map(b => ({
+    key: `b-${b.id}`, href: `/book/${b.id}`, title: b.title, author: b.author, cover: b.cover_url, tag: /nigeria|igbo|housa|hausa|yoruba|equiano/i.test(`${b.title} ${b.author}`) ? 'Nigerian' : 'African',
+  }));
+  const fresh: MarqueeItem[] = novels.map(n => ({
+    key: `n-${n.id}`, href: `/novel/${n.id}`, title: n.title, author: n.booknest_authors?.pen_name, cover: n.cover_url, tag: `${LANG_TAG[n.language] ?? ''} novel`.trim(),
+  }));
+  const used = new Set(african.map(a => a.key));
+  const world: MarqueeItem[] = dailyShuffle(featured, 3).filter(b => !used.has(`b-${b.id}`)).map(b => ({
+    key: `b-${b.id}`, href: `/book/${b.id}`, title: b.title, author: b.author, cover: b.cover_url, tag: getGenre(b)?.name ?? 'Classic',
+  }));
+  const local = [...fresh, ...african];
+  const woven: MarqueeItem[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; woven.length < 36 && (i < naijaStories.length || i < local.length || i < world.length * 2); i += 1) {
+    for (const item of [naijaStories[i], local[i], world[i * 2], world[i * 2 + 1]]) {
+      if (item && !seen.has(item.key) && woven.length < 36) { seen.add(item.key); woven.push(item); }
+    }
+  }
+  const marqueeRows = [woven.filter((_, i) => i % 2 === 0), woven.filter((_, i) => i % 2 === 1)];
 
   const rails: { title: string; kicker: string; href: string; slugs: string[] }[] = [
     { title: 'Mystery & suspense', kicker: 'PAGE-TURNERS', href: '/genre/mystery', slugs: ['mystery'] },
@@ -76,32 +73,23 @@ export default async function Home() {
 
   return (
     <main className="home">
-      {spotlight && (
-        <section className="hero">
-          <div className="heroGlow" aria-hidden />
-          <div className="heroCopy">
-            <span className="kicker"><Sparkles size={14} /> {pick?.h.kicker ?? 'BOOK OF THE DAY'}</span>
-            <h1>{pick?.h.title ?? spotlight.title}</h1>
-            <p className="heroAuthor">by {spotlight.author}{spotlightGenre ? <> · {spotlightGenre.icon} {spotlightGenre.name}</> : null}</p>
-            <p className="heroBlurb">{pick?.h.hook ?? spotlight.description}</p>
-            <div className="heroCtas">
-              <Link className="btn btnGold btnLg" href={`/read/${spotlight.id}`}><BookOpen size={18} /> Start reading</Link>
-              <Link className="btn btnGhost btnLg" href={`/book/${spotlight.id}`}>Details</Link>
-              <SaveBookButton bookId={spotlight.id} />
-            </div>
-            <form className="heroSearch" action="/explore" method="get" role="search">
-              <input name="q" placeholder="Search titles, authors, topics…" aria-label="Search books" />
-              <button>Search</button>
-            </form>
+      <section className="hero heroWall">
+        <div className="heroGlow" aria-hidden />
+        <div className="heroCopy">
+          <span className="kicker"><Sparkles size={14} /> HAUSA · YORÙBÁ · IGBO · PIDGIN · THE WORLD&apos;S CLASSICS</span>
+          <h1>Read Nigeria. Read the world.</h1>
+          <p className="heroBlurb">Thousands of free books, storybooks in your mother tongue, and new novels by Nigerian writers. One beautiful reader on your phone.</p>
+          <div className="heroCtas">
+            <Link className="btn btnGold btnLg" href="/explore"><BookOpen size={18} /> Start reading</Link>
+            <Link className="btn btnGhost btnLg" href="/naija">Naija Languages</Link>
           </div>
-          <div className="heroShelf" aria-hidden>
-            <Link href={`/book/${spotlight.id}`} className="heroMain" tabIndex={-1}><BookCover src={spotlight.cover_url} title={spotlight.title} author={spotlight.author} size="xl" /></Link>
-            <div className="heroStack">
-              {heroStack.map(b => <Link key={b.id} href={`/book/${b.id}`} tabIndex={-1}><BookCover src={b.cover_url} title={b.title} author={b.author} size="sm" /></Link>)}
-            </div>
-          </div>
-        </section>
-      )}
+          <form className="heroSearch" action="/explore" method="get" role="search">
+            <input name="q" placeholder="Search titles, authors, topics…" aria-label="Search books" />
+            <button type="submit">Search</button>
+          </form>
+        </div>
+        {woven.length > 0 && <HeroMarquee rows={marqueeRows} />}
+      </section>
 
       <ContinueReading />
 
