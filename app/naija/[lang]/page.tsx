@@ -49,7 +49,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
         <section id="dictionary" className="card">
           <div className="cardHead"><h3>Enuani–English dictionary & sayings</h3><span className="dim small">{dictionary.filter(entry => entry.category !== 'kitchen').length} sourced entries</span></div>
           <p className="dim dictionaryIntro">Search in either direction: Enuani to English or English to Enuani. Explore sourced vocabulary, proverbs and real-life usage examples.</p>
-          <DictionarySearch entries={dictionary.filter(entry => entry.category !== 'kitchen')} />
+          <DictionarySearch entries={dictionary.filter(entry => entry.category !== 'kitchen')} language={l.name} langCode={lang} />
           <div className="enuaniGuide">
             <h3>Enuani pronunciation & writing notes</h3>
             <p>Enuani is tonal, and local speech varies between communities. These starter notes follow the Atụtụ inu Enuani reference; they are not a substitute for a speaker’s pronunciation.</p>
@@ -69,7 +69,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
               <span className="pill">Soups & dishes</span>
               <span className="pill">Cooking actions</span>
             </div>
-            <DictionarySearch entries={dictionary.filter(entry => entry.category === 'kitchen')} />
+            <DictionarySearch entries={dictionary.filter(entry => entry.category === 'kitchen')} language={l.name} langCode={lang} />
             <p className="fine">Entries are drawn from Enuani cultural and linguistic references. Kitchen-tool names will be added only when their Enuani forms can be checked.</p>
           </section>
       ) : (
@@ -82,7 +82,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
       <section id="dictionary" className="card">
         <div className="cardHead"><h3>{l.name}–English dictionary</h3><span className="dim small">{dictionary.length} verified words</span></div>
         <p className="dim dictionaryIntro">Search verified words and meanings, or contribute a word below if you are a Plus member.</p>
-        <DictionarySearch entries={dictionary} />
+        <DictionarySearch entries={dictionary} language={l.name} langCode={lang} />
       </section>
       )}
 
