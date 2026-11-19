@@ -1010,3 +1010,17 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
   .mqTrack { animation: none; }
   .mqRow { overflow-x: auto; scrollbar-width: none; }
 }
+
+
+/* ───────── Enuani dictionary ───────── */
+.dictionaryIntro { margin: 0 0 16px; }
+.dictionarySearch { width: 100%; min-height: 48px; padding: 12px 15px; border-radius: 12px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text); font: inherit; }
+.dictionarySearch:focus { outline: none; border-color: var(--tint, var(--gold)); }
+.dictionaryEmpty { padding: 22px 16px; border: 1px dashed var(--line-2); border-radius: 14px; color: var(--text-2); text-align: center; }
+.dictionaryList { display: grid; gap: 10px; margin-top: 14px; }
+.dictionaryEntry { display: grid; gap: 5px; padding: 14px 15px; border-radius: 14px; background: var(--bg-2); border: 1px solid var(--line); }
+.dictionaryEntryHead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+.dictionaryEntryHead strong { font-family: var(--display); font-size: 21px; color: var(--gold-2); }
+.dictionaryEntryHead small, .dictionaryPronunciation { color: var(--text-3); font-size: 12px; }
+.dictionaryExample { margin-top: 5px; padding-top: 8px; border-top: 1px solid var(--line); color: var(--text-2); }
+.dictionaryExample span { display: block; font-size: 13px; }
