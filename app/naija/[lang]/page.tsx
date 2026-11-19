@@ -2,7 +2,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, BookOpen, Crown, Feather, Headphones, Lock, PenLine, Play } from 'lucide-react';
-import { LANGS, PHRASES, getCourse, getHeritage, getStories, langMeta, type LangCode } from '../../../lib/naija';
+import { LANGS, PHRASES, getCourse, getDictionaryEntries, getHeritage, getStories, langMeta, type LangCode } from '../../../lib/naija';
+import DictionarySearch from './DictionarySearch';
 import Rail from '../../components/Rail';
 import SponsorSlot from '../../components/SponsorSlot';
 import Footer from '../../components/Footer';
@@ -23,7 +24,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   const l = langMeta(lang);
   if (!l) notFound();
-  const [stories, course, heritage, novels] = await Promise.all([getStories(lang), getCourse(lang).catch(() => null), getHeritage(lang).catch(() => []), getPublishedNovels({ lang, limit: 24 })]);
+  const [stories, course, heritage, novels, dictionary] = await Promise.all([getStories(lang), getCourse(lang).catch(() => null), getHeritage(lang).catch(() => []), getPublishedNovels({ lang, limit: 24 }), lang === 'enu' ? getDictionaryEntries(lang).catch(() => []) : Promise.resolve([])]);
   const lessons = course?.booknest_lang_lessons ?? [];
   const phrases = PHRASES[lang as LangCode];
 
@@ -35,7 +36,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
         <h1>{l.name}</h1>
         <p className="langHello">{l.hello} <span>— {l.helloEn}</span></p>
         <nav className="row">
-          <a className="pill" href="#phrases">Phrases</a>
+          {lang === 'enu' ? <a className="pill" href="#dictionary">Dictionary</a> : <a className="pill" href="#phrases">Phrases</a>}
           {stories.length > 0 && <a className="pill" href="#stories">Storybooks ({stories.length})</a>}
           {lessons.length > 0 && <a className="pill" href="#learn">Learn to speak ({lessons.length})</a>}
           {heritage.length > 0 && <a className="pill" href="#heritage">Heritage books</a>}
@@ -43,12 +44,20 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
         </nav>
       </section>
 
-      <section id="phrases" className="card">
+      {lang === 'enu' ? (
+        <section id="dictionary" className="card">
+          <div className="cardHead"><h3>Enuani–English dictionary</h3><span className="dim small">{dictionary.length} verified entries</span></div>
+          <p className="dim dictionaryIntro">Look up Enuani words, English meanings, pronunciation and example sentences.</p>
+          <DictionarySearch entries={dictionary} />
+        </section>
+      ) : (
+              <section id="phrases" className="card">
         <div className="cardHead"><h3>Everyday phrases</h3><span className="dim small">Free for everyone</span></div>
         <div className="phraseGrid">
           {phrases.map(([p, e]) => <div key={p} className="phrase"><strong lang={lang}>{p}</strong><span>{e}</span></div>)}
         </div>
       </section>
+      )}
 
       {stories.length > 0 && (
         <section id="stories" className="sectionTitle">
