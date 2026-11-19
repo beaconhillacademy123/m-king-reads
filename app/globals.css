@@ -1042,3 +1042,15 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
 .enuaniKitchen { border-color: rgba(226, 182, 92, .2); }
 .kitchenGroups { display: flex; flex-wrap: wrap; gap: 7px; margin: -2px 0 14px; }
 .kitchenGroups .pill { font-size: 12px; }
+
+/* Community language contributions */
+.languageContribution { margin-top: 22px; }
+.languageContribution .formGrid { display: grid; gap: 13px; }
+.languageContribution label { display: grid; gap: 6px; font-size: 13px; color: var(--text-2); }
+.languageContribution input, .languageContribution textarea, .languageContribution select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--bg-2); color: var(--text); font: inherit; }
+.contributionHistory { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
+.contributionHistory h4 { margin-bottom: 10px; }
+.contributionReviewBody { display: grid; gap: 5px; min-width: 0; }
+.contributionReviewActions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.languageContributionReview { align-items: flex-start; gap: 16px; }
+@media (max-width: 640px) { .languageContributionReview { flex-direction: column; } .contributionReviewActions { align-items: flex-start; } }
