@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import type { DictionaryEntry } from '../../../lib/naija';
 
 export default function DictionarySearch({ entries }: { entries: DictionaryEntry[] }) {
   const [query, setQuery] = useState('');
+  const searchId = useId();
   const filtered = useMemo(() => {
     const q = query.trim().toLocaleLowerCase();
     if (!q) return entries;
@@ -16,14 +17,14 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
 
   return (
     <div>
-      <label className="srOnly" htmlFor="enuani-dictionary-search">Search the Enuani dictionary</label>
+      <label className="srOnly" htmlFor={searchId}>Search the Enuani dictionary</label>
       <input
-        id="enuani-dictionary-search"
+        id={searchId}
         className="dictionarySearch"
         type="search"
         value={query}
         onChange={event => setQuery(event.target.value)}
-        placeholder="Search Enuani → English or English → Enuani…"
+        placeholder="Search in Enuani or English…"
       />
       {entries.length === 0 ? (
         <div className="dictionaryEmpty" role="status">
