@@ -1,13 +1,14 @@
 import { supabaseRest } from './supabase-rest';
 import type { Book } from './booknest';
 
-export type LangCode = 'ha' | 'yo' | 'ig' | 'pcm';
+export type LangCode = 'ha' | 'yo' | 'ig' | 'pcm' | 'enu';
 
 export const LANGS: { code: LangCode; name: string; native: string; hello: string; helloEn: string; region: string; tint: string }[] = [
   { code: 'yo', name: 'Yorùbá', native: 'Èdè Yorùbá', hello: 'Ẹ káàbọ̀!', helloEn: 'Welcome!', region: 'South-West', tint: '#e2b65c' },
   { code: 'ha', name: 'Hausa', native: 'Harshen Hausa', hello: 'Sannu da zuwa!', helloEn: 'Welcome!', region: 'North', tint: '#6fcf97' },
   { code: 'ig', name: 'Igbo', native: 'Asụsụ Igbo', hello: 'Nnọọ!', helloEn: 'Welcome!', region: 'South-East', tint: '#ff8ac4' },
   { code: 'pcm', name: 'Pidgin', native: 'Naija', hello: 'How far!', helloEn: "What's up!", region: 'Everywhere', tint: '#8fb8ff' },
+  { code: 'enu', name: 'Enuani', native: 'Asụsụ Enuani', hello: 'Ndeewo!', helloEn: 'Greetings!', region: 'South-South', tint: '#c4a7e7' },
 ];
 
 export const langMeta = (code: string) => LANGS.find(l => l.code === code);
@@ -35,6 +36,8 @@ export const PHRASES: Record<LangCode, [string, string][]> = {
     ['My name na …', 'My name is …'], ['Abeg', 'Please'], ['Thank you well well', 'Thank you very much'], ['Wetin dey happen?', "What's going on?"],
     ['I no sabi', "I don't know"], ['Make we dey go', "Let's go"], ['No wahala', 'No problem'], ['Una well done', 'Well done, everyone'],
   ],
+  // Enuani entries are deliberately left empty until checked by fluent speakers.
+  enu: [],
 };
 
 export type StoryPage = { image: string | null; text: string; en: string | null };
@@ -44,6 +47,7 @@ export type LangStory = {
 };
 export type Lesson = { id: string; position: number; title: string; tracks: { label: string; url: string }[] };
 export type Course = { id: string; lang: LangCode; title: string; description: string | null; source: string; book_url: string | null; free_lessons: number; booknest_lang_lessons?: Lesson[] };
+export type DictionaryEntry = { id: string; term: string; definition: string; pronunciation: string | null; part_of_speech: string | null; example_native: string | null; example_en: string | null; source: string | null };
 
 const STORY_FIELDS = 'id,lang,story_no,title,title_en,author,illustrator,translator,level,license,source,cover_url';
 
@@ -65,6 +69,9 @@ export async function getCourse(lang: string) {
 
 export const getCourseCounts = () =>
   supabaseRest<{ lang: string; booknest_lang_lessons: { count: number }[] }[]>('booknest_lang_courses?select=lang,booknest_lang_lessons(count)');
+
+export const getDictionaryEntries = (lang: string) =>
+  supabaseRest<DictionaryEntry[]>(`booknest_lang_dictionary?select=id,term,definition,pronunciation,part_of_speech,example_native,example_en,source&lang=eq.${encodeURIComponent(lang)}&verified=eq.true&order=term.asc`);
 
 export const getHeritage = (lang?: string) =>
   supabaseRest<Book[]>(`booknest_books?select=id,title,author,description,cover_url,source_name,source_url,license,read_url,download_url,is_featured,publication_year,language,gutenberg_id,audience,vibe,booknest_genres(id,name,slug,icon)&naija_langs=cs.${encodeURIComponent(`{${lang ?? 'ng'}}`)}&order=title.asc`);
