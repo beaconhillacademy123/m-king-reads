@@ -2,6 +2,13 @@
 alter table public.booknest_lang_dictionary
   add column if not exists usage_note text;
 
+-- Keep general Igbo lexicon entries out of the Enuani-specific public dictionary
+-- until an Enuani community or specialist source confirms the forms.
+update public.booknest_lang_dictionary
+set verified = false
+where lang = 'enu'
+  and source = 'https://ndinaasubia.org.ng/olu_ndigbo/';
+
 insert into public.booknest_lang_dictionary
   (lang, term, definition, pronunciation, part_of_speech, example_native, example_en, usage_note, source, verified)
 values
