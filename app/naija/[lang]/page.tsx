@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, BookOpen, Crown, Feather, Headphones, Lock, PenLine, Play } from 'lucide-react';
 import { LANGS, PHRASES, getCourse, getDictionaryEntries, getHeritage, getStories, langMeta, type LangCode } from '../../../lib/naija';
 import DictionarySearch from './DictionarySearch';
+import LanguageContribution from './LanguageContribution';
 import Rail from '../../components/Rail';
 import SponsorSlot from '../../components/SponsorSlot';
 import Footer from '../../components/Footer';
@@ -79,6 +80,8 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
         </div>
       </section>
       )}
+
+      <LanguageContribution lang={lang} languageName={l.name} />
 
       {stories.length > 0 && (
         <section id="stories" className="sectionTitle">
