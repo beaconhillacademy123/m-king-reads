@@ -47,7 +47,7 @@ export type LangStory = {
 };
 export type Lesson = { id: string; position: number; title: string; tracks: { label: string; url: string }[] };
 export type Course = { id: string; lang: LangCode; title: string; description: string | null; source: string; book_url: string | null; free_lessons: number; booknest_lang_lessons?: Lesson[] };
-export type DictionaryEntry = { id: string; term: string; definition: string; pronunciation: string | null; part_of_speech: string | null; example_native: string | null; example_en: string | null; usage_note: string | null; source: string | null };
+export type DictionaryEntry = { id: string; term: string; definition: string; pronunciation: string | null; part_of_speech: string | null; example_native: string | null; example_en: string | null; usage_note: string | null; source: string | null; category: string | null };
 
 const STORY_FIELDS = 'id,lang,story_no,title,title_en,author,illustrator,translator,level,license,source,cover_url';
 
@@ -71,7 +71,7 @@ export const getCourseCounts = () =>
   supabaseRest<{ lang: string; booknest_lang_lessons: { count: number }[] }[]>('booknest_lang_courses?select=lang,booknest_lang_lessons(count)');
 
 export const getDictionaryEntries = (lang: string) =>
-  supabaseRest<DictionaryEntry[]>(`booknest_lang_dictionary?select=id,term,definition,pronunciation,part_of_speech,example_native,example_en,usage_note,source&lang=eq.${encodeURIComponent(lang)}&verified=eq.true&order=term.asc`);
+  supabaseRest<DictionaryEntry[]>(`booknest_lang_dictionary?select=id,term,definition,pronunciation,part_of_speech,example_native,example_en,usage_note,source,category&lang=eq.${encodeURIComponent(lang)}&verified=eq.true&order=term.asc`);
 
 export const getHeritage = (lang?: string) =>
   supabaseRest<Book[]>(`booknest_books?select=id,title,author,description,cover_url,source_name,source_url,license,read_url,download_url,is_featured,publication_year,language,gutenberg_id,audience,vibe,booknest_genres(id,name,slug,icon)&naija_langs=cs.${encodeURIComponent(`{${lang ?? 'ng'}}`)}&order=title.asc`);
