@@ -28,7 +28,7 @@ export default function AdminPage() {
   const [busy, setBusy] = useState('');
   const [toast, setToast] = useState('');
 
-  const flash = (t: string) => { setToast(t); window.setTimeout(() => setToast(''), 2600); };
+  const flash = useCallback((t: string) => { setToast(t); window.setTimeout(() => setToast(''), 2600); }, []);
 
   const loadCore = useCallback(async () => {
     const [{ data: s }, { data: p }] = await Promise.all([supabase.rpc('booknest_admin_stats'), supabase.rpc('booknest_admin_payment_overview')]);
