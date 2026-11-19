@@ -37,7 +37,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
         <h1>{l.name}</h1>
         {l.hello && <p className="langHello">{l.hello} <span>— {l.helloEn}</span></p>}
         <nav className="row">
-          {lang === 'enu' ? <><a className="pill" href="#dictionary">Dictionary</a><a className="pill" href="#kitchen">Kitchen dictionary</a></> : <a className="pill" href="#phrases">Phrases</a>}
+          {lang === 'enu' ? <><a className="pill" href="#dictionary">Dictionary</a><a className="pill" href="#kitchen">Kitchen dictionary</a></> : <><a className="pill" href="#phrases">Phrases</a><a className="pill" href="#dictionary">Dictionary</a></>}
           {stories.length > 0 && <a className="pill" href="#stories">Storybooks ({stories.length})</a>}
           {lessons.length > 0 && <a className="pill" href="#learn">Learn to speak ({lessons.length})</a>}
           {heritage.length > 0 && <a className="pill" href="#heritage">Heritage books</a>}
@@ -73,6 +73,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
             <p className="fine">Entries are drawn from Enuani cultural and linguistic references. Kitchen-tool names will be added only when their Enuani forms can be checked.</p>
           </section>
       ) : (
+        <>
               <section id="phrases" className="card">
         <div className="cardHead"><h3>Everyday phrases</h3><span className="dim small">Free for everyone</span></div>
         <div className="phraseGrid">
@@ -84,6 +85,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
         <p className="dim dictionaryIntro">Search verified words and meanings, or contribute a word below if you are a Plus member.</p>
         <DictionarySearch entries={dictionary} language={l.name} langCode={lang} />
       </section>
+        </>
       )}
 
       <LanguageContribution lang={lang} languageName={l.name} />
