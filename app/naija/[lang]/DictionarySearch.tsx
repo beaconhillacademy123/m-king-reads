@@ -40,7 +40,7 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
                 <strong lang="enu">{entry.term}</strong>
                 {entry.part_of_speech && <small>{entry.part_of_speech}</small>}
               </div>
-              {entry.pronunciation && <span className="dictionaryPronunciation">/{entry.pronunciation}/</span>}
+              {entry.pronunciation && <span className="dictionaryPronunciation">Pronunciation: {entry.pronunciation}</span>}
               <span>{entry.definition}</span>
               {entry.example_native && (
                 <div className="dictionaryExample">
@@ -49,7 +49,7 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
                 </div>
               )}
               {entry.source && <a className="dictionarySource" href={entry.source} target="_blank" rel="noreferrer">Source</a>}
-                {entry.source && <small className="dictionarySource">Source: {entry.source}</small>}
+                {entry.source && (() => { const url = entry.source.match(/https?:\\/\\/[^\\s]+/)?.[0]; return url ? <a className="dictionarySource" href={url} target="_blank" rel="noreferrer">Source reference</a> : <small className="dictionarySource">Source: {entry.source}</small>; })()}
           </article>
           ))}
         </div>
