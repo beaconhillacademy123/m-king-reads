@@ -28,7 +28,7 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
       {entries.length === 0 ? (
         <div className="dictionaryEmpty" role="status">
           <strong>The Enuani dictionary is being compiled.</strong>
-          <p>Verified entries will appear here with their English meanings and pronunciation.</p>
+          <p>Sourced entries will appear here with their English meanings and pronunciation.</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="dictionaryEmpty" role="status">No matching words found.</div>
