@@ -21,7 +21,7 @@ export default async function NaijaHub() {
         <span className="kicker"><span className="ng" /> NAIJA LANGUAGES</span>
         <h1>Read it. Hear it. <em>Speak it.</em></h1>
         <p>Storybooks in your mother tongue, audio lessons from native speakers and language resources in Yorùbá, Hausa, Igbo, Pidgin and Enuani.</p>
-        <div className="naijaHellos" aria-hidden>{LANGS.map(l => <span key={l.code} style={{ color: l.tint }}>{l.hello}</span>)}</div>
+        <div className="naijaHellos" aria-hidden>{LANGS.filter(l => l.hello).map(l => <span key={l.code} style={{ color: l.tint }}>{l.hello}</span>)}</div>
       </section>
 
       <section className="langGrid">
@@ -32,7 +32,7 @@ export default async function NaijaHub() {
             <Link key={l.code} href={`/naija/${l.code}`} className="langCard" style={{ ['--tint' as string]: l.tint } as React.CSSProperties}>
               <span className="langNative">{l.native}</span>
               <strong>{l.name}</strong>
-              <em>{l.hello} <small>{l.helloEn}</small></em>
+              {l.hello && <em>{l.hello} <small>{l.helloEn}</small></em>}
               <ul>
                 {s > 0 && <li><BookOpen size={14} /> {s} storybooks</li>}
                 {n > 0 && <li><Headphones size={14} /> {n} audio lessons</li>}
