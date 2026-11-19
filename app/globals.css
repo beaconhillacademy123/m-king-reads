@@ -1036,3 +1036,9 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
 .enuaniGuide ul { display: grid; gap: 8px; margin: 12px 0; padding-left: 20px; color: var(--text-2); }
 .enuaniGuide li strong { color: var(--gold-2); }
 .enuaniGuide a { color: var(--gold-2); text-decoration: underline; text-underline-offset: 3px; }
+
+
+/* Enuani kitchen dictionary */
+.enuaniKitchen { border-color: rgba(226, 182, 92, .2); }
+.kitchenGroups { display: flex; flex-wrap: wrap; gap: 7px; margin: -2px 0 14px; }
+.kitchenGroups .pill { font-size: 12px; }
