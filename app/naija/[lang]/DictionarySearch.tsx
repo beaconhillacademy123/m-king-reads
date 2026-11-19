@@ -48,6 +48,7 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
                   {entry.example_en && <span>{entry.example_en}</span>}
                 </div>
               )}
+              {entry.source && <a className="dictionarySource" href={entry.source} target="_blank" rel="noreferrer">Source</a>}
             </article>
           ))}
         </div>
