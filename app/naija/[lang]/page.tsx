@@ -75,7 +75,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
       )}
 
       {lang !== 'pcm' && stories.length === 0 && (
-        <div className="emptyState"><strong>{l.name} storybooks are coming.</strong><p>Open-licence {l.name} picture books are scarce — we&apos;re working with writers and translators to add them. Meanwhile, start speaking with the lessons below.</p></div>
+        <div className="emptyState"><strong>{l.name} storybooks are coming.</strong><p>Open-licence {l.name} picture books are not yet available — we&apos;re working with writers and translators to add them.</p></div>
       )}
 
       <SponsorSlot variant="inline" />
