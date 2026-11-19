@@ -29,7 +29,7 @@ function dailyShuffle<T>(items: T[], salt: number): T[] {
   return out;
 }
 
-const LANG_TAG: Record<string, string> = { yo: 'Yorùbá', ha: 'Hausa', ig: 'Igbo', pcm: 'Pidgin', en: 'English' };
+const LANG_TAG: Record<string, string> = { yo: 'Yorùbá', ha: 'Hausa', ig: 'Igbo', pcm: 'Pidgin', enu: 'Enuani', en: 'English' };
 
 export default async function Home() {
   const [books, genres, novels, stories] = await Promise.all([getCatalogue(), getGenres(), getPublishedNovels({ limit: 16 }), getStories().catch(() => [])]);
@@ -77,7 +77,7 @@ export default async function Home() {
       <section className="hero heroWall">
         <div className="heroGlow" aria-hidden />
         <div className="heroCopy">
-          <span className="kicker"><Sparkles size={14} /> HAUSA · YORÙBÁ · IGBO · PIDGIN · THE WORLD&apos;S CLASSICS</span>
+          <span className="kicker"><Sparkles size={14} /> HAUSA · YORÙBÁ · IGBO · PIDGIN · ENUANI · THE WORLD&apos;S CLASSICS</span>
           <h1>Read Nigeria. Read the world.</h1>
           <p className="heroBlurb">Thousands of free books, storybooks in your mother tongue, and new novels by Nigerian writers. One beautiful reader on your phone.</p>
           <div className="heroCtas">
@@ -124,8 +124,8 @@ export default async function Home() {
       <section className="naijaBand">
         <div>
           <span className="kicker"><span className="ng" /> NEW · NAIJA LANGUAGES</span>
-          <h2>Read and speak Yorùbá, Hausa, Igbo &amp; Pidgin</h2>
-          <p>Picture storybooks in your mother tongue, audio lessons from native speakers and everyday phrases.</p>
+          <h2>Read and speak Yorùbá, Hausa, Igbo, Pidgin &amp; Enuani</h2>
+          <p>Picture storybooks in your mother tongue, audio lessons from native speakers, everyday phrases and the Enuani dictionary.</p>
         </div>
         <div className="naijaChips">
           {LANGS.map(l => <Link key={l.code} href={`/naija/${l.code}`} style={{ borderColor: l.tint }}><strong>{l.name}</strong><small style={{ color: l.tint }}>{l.hello}</small></Link>)}
@@ -145,7 +145,7 @@ export default async function Home() {
       ) : null}
 
       <section className="card writeCta">
-        <div><span className="kicker"><Feather size={13} /> FOR WRITERS</span><h3>Write in Yorùbá, Hausa, Igbo or Pidgin? Get paid for it.</h3>
+        <div><span className="kicker"><Feather size={13} /> FOR WRITERS</span><h3>Write in Yorùbá, Hausa, Igbo, Pidgin or Enuani? Get paid for it.</h3>
           <p className="dim">Publish your novel chapter by chapter. Readers unlock it, and you keep most of every sale.</p></div>
         <Link className="btn btnGold" href="/write"><PenLine size={16} /> Publish your novel</Link>
       </section>
