@@ -9,7 +9,7 @@ export default function SplashSkip() {
     if (!el) return;
     const hide = () => el.classList.add('pvGone');
     el.addEventListener('click', hide);
-    const t = window.setTimeout(hide, 2600);
+    const t = window.setTimeout(hide, 4500);
     return () => { el.removeEventListener('click', hide); window.clearTimeout(t); };
   }, []);
   return null;
