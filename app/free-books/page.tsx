@@ -38,7 +38,8 @@ export default async function FreeBooksPage({ searchParams }: { searchParams: Pr
         {TOPICS.map(([v, l]) => <Link key={v} href={'/free-books?' + new URLSearchParams({ ...(q ? { q } : {}), ...(v ? { topic: v } : {}) }).toString()} className={`chip${topic === v ? ' on' : ''}`}>{l}</Link>)}
       </nav>
       {!data ? (
-        <div className="emptyState"><strong>The open collection is busy right now.</strong><p>Project Gutenberg&apos;s catalogue is responding slowly. Try again in a moment, or browse our curated shelf.</p><div className="row"><Link className="btn btnGold" href={link({ page: String(page) })}>Try again</Link><Link className="btn btnGhost" href="/explore">Curated shelf</Link></div></div>
+        <div className="emptyState"><strong>The open collection is busy right now.</strong><p>Project Gutenberg&apos;s catalogue is responding slowly. Try again in a moment, or browse our curated shelf.</p><div className="row"><Link className="btn btnGold" href={link({ page: String(page) })}>Try again</Link><Link className="btn btnGhost" href="/explore">Curated shelf</Link></div>
+          <form className="searchBar" action="/free-books/open" method="get" style={{ marginTop: 10 }}><input name="id" inputMode="numeric" placeholder="Know the Gutenberg book number? e.g. 1342" aria-label="Gutenberg book number" /><button className="btn btnGhost btnSmall">Open</button></form></div>
       ) : (
         <>
           <p className="dim metaLine"><strong>{data.count.toLocaleString()}</strong> books · page {page} of {totalPages.toLocaleString()}</p>

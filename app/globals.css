@@ -687,3 +687,8 @@ label.check { flex-direction: row; align-items: center; gap: 10px; }
 .bookmarkItem span { color: var(--gold); font-size: 12px; font-weight: 700; }
 .bookmarkActions button, .profileAction { min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface-2); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
 .suggestPage .back { margin-right: 14px; }
+@media (max-width: 520px) {
+  .heroCtas { flex-wrap: nowrap; }
+  .heroCtas .btnLg { flex: 1; padding: 0 12px; min-height: 48px; font-size: 14.5px; }
+  .heroCtas .save { width: 48px; height: 48px; flex: none; }
+}

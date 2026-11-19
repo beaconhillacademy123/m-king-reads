@@ -52,9 +52,13 @@ export async function fetchWithTimeout(url: string, ms: number, revalidate = 864
 export async function loadGutenbergChapters(gutenbergId: string | number): Promise<GutenbergChapter[] | null> {
   const id = String(gutenbergId).replace(/\D/g, '');
   if (!id) return null;
+  // gutenberg.org rate-limits cloud servers, so official mirrors are tried first.
+  const dirs = id.length === 1 ? `0/${id}` : `${id.slice(0, -1).split('').join('/')}/${id}`;
   const candidates = [
+    `https://gutenberg.pglaf.org/cache/epub/${id}/pg${id}-images.html`,
+    `https://gutenberg.pglaf.org/${dirs}/${id}-h/${id}-h.htm`,
+    `http://mirrors.xmission.com/gutenberg/${dirs}/${id}-h/${id}-h.htm`,
     `https://www.gutenberg.org/cache/epub/${id}/pg${id}-images.html`,
-    `https://www.gutenberg.org/ebooks/${id}.html.images`,
   ];
   for (const url of candidates) {
     try {
