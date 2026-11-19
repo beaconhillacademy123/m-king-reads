@@ -25,7 +25,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   const l = langMeta(lang);
   if (!l) notFound();
-  const [stories, course, heritage, novels, dictionary] = await Promise.all([getStories(lang), getCourse(lang).catch(() => null), getHeritage(lang).catch(() => []), getPublishedNovels({ lang, limit: 24 }), lang === 'enu' ? getDictionaryEntries(lang).catch(() => []) : Promise.resolve([])]);
+  const [stories, course, heritage, novels, dictionary] = await Promise.all([getStories(lang), getCourse(lang).catch(() => null), getHeritage(lang).catch(() => []), getPublishedNovels({ lang, limit: 24 }), getDictionaryEntries(lang).catch(() => [])]);
   const lessons = course?.booknest_lang_lessons ?? [];
   const phrases = PHRASES[lang as LangCode];
 
@@ -78,6 +78,11 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
         <div className="phraseGrid">
           {phrases.map(([p, e]) => <div key={p} className="phrase"><strong lang={lang}>{p}</strong><span>{e}</span></div>)}
         </div>
+      </section>
+      <section id="dictionary" className="card">
+        <div className="cardHead"><h3>{l.name}–English dictionary</h3><span className="dim small">{dictionary.length} verified words</span></div>
+        <p className="dim dictionaryIntro">Search verified words and meanings, or contribute a word below if you are a Plus member.</p>
+        <DictionarySearch entries={dictionary} />
       </section>
       )}
 
