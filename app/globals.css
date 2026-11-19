@@ -1024,3 +1024,6 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
 .dictionaryEntryHead small, .dictionaryPronunciation { color: var(--text-3); font-size: 12px; }
 .dictionaryExample { margin-top: 5px; padding-top: 8px; border-top: 1px solid var(--line); color: var(--text-2); }
 .dictionaryExample span { display: block; font-size: 13px; }
+
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.dictionarySource { width: fit-content; margin-top: 5px; color: var(--tint, var(--gold)); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
