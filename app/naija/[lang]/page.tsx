@@ -46,6 +46,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
       </section>
 
       {lang === 'enu' ? (
+        <>
         <section id="dictionary" className="card">
           <div className="cardHead"><h3>Enuani–English dictionary & sayings</h3><span className="dim small">{dictionary.filter(entry => entry.category !== 'kitchen').length} sourced entries</span></div>
           <p className="dim dictionaryIntro">Search in either direction: Enuani to English or English to Enuani. Explore sourced vocabulary, proverbs and real-life usage examples.</p>
@@ -72,6 +73,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
             <DictionarySearch entries={dictionary.filter(entry => entry.category === 'kitchen')} language={l.name} langCode={lang} />
             <p className="fine">Entries are drawn from Enuani cultural and linguistic references. Kitchen-tool names will be added only when their Enuani forms can be checked.</p>
           </section>
+        </>
       ) : (
         <>
               <section id="phrases" className="card">
