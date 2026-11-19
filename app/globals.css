@@ -1027,3 +1027,12 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
 
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .dictionarySource { width: fit-content; margin-top: 5px; color: var(--tint, var(--gold)); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+
+
+/* Enuani language notes */
+.enuaniGuide { margin-top: 20px; padding: 18px; border-radius: 14px; background: var(--bg-2); border: 1px solid var(--line); }
+.enuaniGuide h3 { font-size: 20px; margin-bottom: 8px; }
+.enuaniGuide p { color: var(--text-2); }
+.enuaniGuide ul { display: grid; gap: 8px; margin: 12px 0; padding-left: 20px; color: var(--text-2); }
+.enuaniGuide li strong { color: var(--gold-2); }
+.enuaniGuide a { color: var(--gold-2); text-decoration: underline; text-underline-offset: 3px; }
