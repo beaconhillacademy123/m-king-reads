@@ -541,7 +541,7 @@ label.check { flex-direction: row; align-items: center; gap: 10px; }
 .readerPage { max-width: 700px; margin: 0 auto; padding: 96px 22px 110px; }
 .chapterHead { text-align: center; margin-bottom: 38px; }
 .chapterHead span { font-size: 11px; letter-spacing: .2em; color: var(--r-muted); font-weight: 700; }
-.chapterHead h1 { font-family: var(--display); font-size: clamp(28px, 5vw, 40px); margin-top: 12px; text-transform: capitalize; }
+.chapterHead h1 { font-family: var(--display); font-size: clamp(28px, 5vw, 40px); margin-top: 12px; }
 .readerBody { font-family: var(--display); font-optical-sizing: auto; word-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; text-rendering: optimizeLegibility; }
 .font-sans .readerBody { font-family: var(--sans); }
 .font-classic .readerBody { font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif; }
@@ -587,7 +587,7 @@ label.check { flex-direction: row; align-items: center; gap: 10px; }
 .chapterList { display: flex; flex-direction: column; max-height: 52vh; overflow-y: auto; }
 .chapterList a { display: flex; gap: 12px; align-items: baseline; padding: 11px 10px; border-radius: 10px; font-size: 14.5px; }
 .chapterList a span { color: var(--text-3); font-size: 12px; min-width: 22px; }
-.chapterList a strong { font-weight: 500; text-transform: capitalize; }
+.chapterList a strong { font-weight: 500; }
 .chapterList a:hover { background: var(--surface-2); }
 .chapterList a.current { background: rgba(226, 182, 92, .14); color: var(--gold-2); }
 .sheetFoot { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }

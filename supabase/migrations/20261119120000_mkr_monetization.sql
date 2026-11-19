@@ -278,3 +278,6 @@ create index if not exists booknest_books_created_idx on public.booknest_books(c
 alter table public.booknest_books add column if not exists gutenberg_id integer;
 create unique index if not exists booknest_books_gutenberg_genre_uidx on public.booknest_books(gutenberg_id, genre_id) where gutenberg_id is not null;
 alter table public.booknest_books add column if not exists popularity integer not null default 0;
+
+-- Trigger function should not be callable over the API.
+revoke all on function public.booknest_payment_request_guard() from public, anon, authenticated;
