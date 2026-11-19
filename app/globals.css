@@ -782,9 +782,9 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
 .langHead h1 { font-size: clamp(38px, 6vw, 58px); }
 .langHello { font-family: var(--display); font-size: 22px; font-style: italic; color: var(--tint); }
 .langHello span { font-family: var(--sans); font-style: normal; font-size: 15px; color: var(--text-3); }
-.phraseGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.phraseGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
 .phrase { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-radius: 14px; background: var(--bg-2); border-left: 3px solid var(--tint, var(--gold)); }
-.phrase strong { font-family: var(--display); font-size: 19px; }
+.phrase strong { font-family: var(--display); font-size: 17px; }
 .phrase span { color: var(--text-3); font-size: 13px; }
 .sectionTitle h2 { display: flex; align-items: center; gap: 8px; }
 .storyGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px 16px; margin-top: 14px; }
