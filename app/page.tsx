@@ -16,6 +16,37 @@ function bySlugs(books: Book[], slugs: string[]) {
   return books.filter(b => slugs.includes(getGenre(b)?.slug ?? ''));
 }
 
+/**
+ * The welcome book. A hand-picked rotation of page-turners, each with its own hook,
+ * opening with Olaudah Equiano: the Igbo boy who was kidnapped, bought his freedom and wrote it all down.
+ */
+const HEADLINERS: { id: string; kicker: string; title?: string; hook: string }[] = [
+  { id: '969a850d-1c54-4e5b-a78b-1be413fe90b3', kicker: 'A TRUE NIGERIAN STORY', title: 'The Interesting Narrative of Olaudah Equiano',
+    hook: 'Kidnapped from his Igbo village at eleven and sold across the ocean, he survived wars, storms and slavery, bought his own freedom, and wrote the bestseller that helped end the slave trade.' },
+  { id: 'c9f1aa4c-3e10-4c2f-b2f6-584031808a71', kicker: 'READ IT WITH THE LIGHTS ON',
+    hook: 'A young lawyer travels to a castle in Transylvania. His host never eats, never sleeps and casts no reflection, and the doors lock from the outside.' },
+  { id: '7937861f-a638-4328-83bf-6dbb33dc512f', kicker: 'THE ORIGINAL DETECTIVE',
+    hook: 'Twelve impossible cases. One man who notices what everyone else misses. Can you solve them before Sherlock Holmes does?' },
+  { id: 'c4916927-a9ca-40cb-8a9a-53aeb5bd896e', kicker: 'TALES FROM HOME',
+    hook: 'Tortoise, tricksters, kings and spirits: forty folk tales from the Ikom people of Cross River, written down more than a hundred years ago.' },
+  { id: '7d855d87-143d-4cff-98f3-634d48a41a88', kicker: 'THE GREATEST REVENGE STORY EVER',
+    hook: 'Betrayed on his wedding day and locked away for fourteen years, Edmond Dantès escapes with a hidden fortune and a perfect plan.' },
+  { id: 'c67fa83b-7975-4afa-a91c-b9d5d9da8d3c', kicker: '2,500 YEARS OF WINNING',
+    hook: 'The short, ruthless playbook that generals, CEOs and hustlers still use to win without fighting.' },
+  { id: '57688156-24a3-4a2f-a38f-f17ac32c072e', kicker: 'THE ORIGINAL ENEMIES-TO-LOVERS',
+    hook: 'She judges him too fast. He is too proud to explain. Two hundred years later, readers still cannot put it down.' },
+  { id: '4883095d-a407-42f9-ad02-117b812747de', kicker: 'THE FIRST SCIENCE FICTION',
+    hook: 'A brilliant student builds a living man from the dead, then runs from what he has made. His creation follows.' },
+  { id: '1fdbe288-13fd-4a92-b699-dd9d6a5f4f13', kicker: "AN EMPEROR'S PRIVATE DIARY",
+    hook: 'The most powerful man in Rome wrote notes to himself on staying calm, humble and strong. Read them over his shoulder.' },
+];
+
+/** Days since the launch of this lineup, so it opens on Equiano and moves on one book a day. */
+function headlinerIndex(len: number) {
+  const day = Math.floor((Date.now() + 3600_000) / 86_400_000) - Math.floor(Date.UTC(2026, 10, 19) / 86_400_000);
+  return ((day % len) + len) % len;
+}
+
 function dayIndex(len: number) {
   const d = new Date();
   return len ? (d.getUTCFullYear() * 372 + d.getUTCMonth() * 31 + d.getUTCDate()) % len : 0;
@@ -24,8 +55,10 @@ function dayIndex(len: number) {
 export default async function Home() {
   const [books, genres, novels] = await Promise.all([getCatalogue(), getGenres(), getPublishedNovels({ limit: 16 })]);
   const featured = books.filter(b => b.is_featured);
-  const spotlight = featured[dayIndex(featured.length)] ?? books[0];
-  const heroStack = featured.filter(b => b.id !== spotlight?.id).slice(0, 4);
+  const lineup = HEADLINERS.map(h => ({ h, book: books.find(b => b.id === h.id) })).filter((x): x is { h: (typeof HEADLINERS)[number]; book: Book } => !!x.book);
+  const pick = lineup.length ? lineup[headlinerIndex(lineup.length)] : null;
+  const spotlight = pick?.book ?? featured[dayIndex(featured.length)] ?? books[0];
+  const heroStack = (lineup.length ? lineup.map(x => x.book) : featured).filter(b => b.id !== spotlight?.id).slice(0, 4);
   const spotlightGenre = spotlight ? getGenre(spotlight) : null;
 
   const rails: { title: string; kicker: string; href: string; slugs: string[] }[] = [
@@ -47,10 +80,10 @@ export default async function Home() {
         <section className="hero">
           <div className="heroGlow" aria-hidden />
           <div className="heroCopy">
-            <span className="kicker"><Sparkles size={14} /> BOOK OF THE DAY</span>
-            <h1>{spotlight.title}</h1>
+            <span className="kicker"><Sparkles size={14} /> {pick?.h.kicker ?? 'BOOK OF THE DAY'}</span>
+            <h1>{pick?.h.title ?? spotlight.title}</h1>
             <p className="heroAuthor">by {spotlight.author}{spotlightGenre ? <> · {spotlightGenre.icon} {spotlightGenre.name}</> : null}</p>
-            <p className="heroBlurb">{spotlight.description}</p>
+            <p className="heroBlurb">{pick?.h.hook ?? spotlight.description}</p>
             <div className="heroCtas">
               <Link className="btn btnGold btnLg" href={`/read/${spotlight.id}`}><BookOpen size={18} /> Start reading</Link>
               <Link className="btn btnGhost btnLg" href={`/book/${spotlight.id}`}>Details</Link>

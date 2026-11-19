@@ -8,6 +8,7 @@ import { useAccount } from '../../../../lib/account';
 import { naira } from '../../../../lib/format';
 import type { Chapter, NovelAccess, TocRow } from '../../../../lib/novels';
 import SponsorSlot from '../../../components/SponsorSlot';
+import NotePad from '../../../components/NotePad';
 
 type BookLite = { id: string; title: string; language: string; access: NovelAccess; price_ngn: number; author: string };
 
@@ -88,6 +89,8 @@ export default function ChapterReader({ book, position }: { book: BookLite; posi
       )}
 
       {chapter && position === 1 && <SponsorSlot variant="inline" />}
+
+      <NotePad bookKey={`novel:${book.id}`} title={book.title} href={`/novel/${book.id}/${position}`} context={chapter ? `Chapter ${chapter.position}: ${chapter.title}` : `Chapter ${position}`} raised />
 
       <nav className="chapterNav plain">
         {prev ? <Link className="btn btnGhost" href={`/novel/${book.id}/${prev.chapter_position}`}><ChevronLeft size={16} /> Previous</Link> : <span />}

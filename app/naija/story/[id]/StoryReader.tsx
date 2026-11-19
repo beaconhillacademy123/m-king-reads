@@ -7,6 +7,7 @@ import type { LangStory } from '../../../../lib/naija';
 import { licenseUrl } from '../../../../lib/naija';
 import SponsorSlot from '../../../components/SponsorSlot';
 import ShareBookButton from '../../../components/ShareBookButton';
+import NotePad from '../../../components/NotePad';
 
 const THE_END: Record<string, string> = { yo: 'Ó parí', ha: 'Ƙarshe', ig: 'Ọ gwụla', pcm: 'E don finish!' };
 
@@ -19,6 +20,8 @@ export default function StoryReader({ story, langName }: { story: LangStory; lan
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'TEXTAREA' || t.tagName === 'INPUT' || t.isContentEditable)) return; // typing in the notepad
       if (e.key === 'ArrowRight') setI(v => Math.min(last, v + 1));
       if (e.key === 'ArrowLeft') setI(v => Math.max(-1, v - 1));
     };
@@ -86,6 +89,7 @@ export default function StoryReader({ story, langName }: { story: LangStory; lan
         </p>
         <p className="fine">From the <a href="https://africanstorybook.org" target="_blank" rel="noreferrer">African Storybook</a>{story.source === 'storybooks-nigeria' && <> via <a href="https://global-asp.github.io/storybooks-nigeria/" target="_blank" rel="noreferrer">Storybooks Nigeria</a></>}. Licensed under <a href={licenseUrl(story.license)} target="_blank" rel="noreferrer">{story.license}</a>.</p>
       </footer>
+      <NotePad bookKey={`story:${story.id}`} title={story.title} href={`/naija/story/${story.id}`} context={page ? `Page ${i + 1}` : undefined} />
     </main>
   );
 }

@@ -920,3 +920,59 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
 .reviewChapters summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
 .reviewText { white-space: pre-wrap; font-family: var(--display); line-height: 1.7; color: var(--text-2); padding: 10px 12px; border-radius: 10px; background: var(--bg-2); }
 .miniInput { width: 90px; padding: 7px 10px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--line-2); color: var(--text); font: inherit; }
+
+/* ───────── Notepad ───────── */
+.noteFab {
+  position: fixed; right: 18px; bottom: calc(22px + var(--safe-b)); z-index: 60; width: 54px; height: 54px; border-radius: 50%;
+  display: grid; place-items: center; border: 0; cursor: pointer; color: #1b1407; background: var(--gold-grad);
+  box-shadow: 0 10px 28px -8px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.12) inset; transition: transform .2s, opacity .3s;
+}
+.noteFab:hover { transform: translateY(-2px); }
+.noteFab:active { transform: scale(.95); }
+.noteFabRaised { bottom: calc(var(--tabbar-h) + 18px + var(--safe-b)); }
+@media (min-width: 861px) { .noteFabRaised { bottom: calc(22px + var(--safe-b)); } }
+.noteDot { position: absolute; top: 9px; right: 10px; width: 10px; height: 10px; border-radius: 50%; background: #1b1407; box-shadow: 0 0 0 2px #f6d58b; }
+.chromeHidden .noteFab { opacity: .35; }
+.noteBack { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.35); }
+@media (min-width: 861px) { .noteBack { background: transparent; } }
+.notePad {
+  --np-bg: var(--r-bg, var(--surface)); --np-text: var(--r-text, var(--text)); --np-muted: var(--r-muted, var(--text-3)); --np-line: var(--r-line, var(--line));
+  position: fixed; z-index: 80; left: 0; right: 0; bottom: 0; height: min(72vh, 620px); display: flex; flex-direction: column;
+  background: var(--np-bg); color: var(--np-text); border-top-left-radius: 22px; border-top-right-radius: 22px;
+  border: 1px solid var(--np-line); box-shadow: 0 -18px 50px -18px rgba(0,0,0,.6);
+  transform: translateY(105%); transition: transform .28s cubic-bezier(.2,.8,.2,1); padding-bottom: var(--safe-b); visibility: hidden;
+}
+.notePad.open { transform: none; visibility: visible; }
+@media (min-width: 861px) {
+  .notePad { left: auto; right: 18px; bottom: 88px; width: 400px; height: min(70vh, 600px); border-radius: 20px; transform: translateY(16px) scale(.98); opacity: 0; transition: transform .22s, opacity .22s; }
+  .notePad.open { transform: none; opacity: 1; }
+}
+.noteHead { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px 10px; border-bottom: 1px solid var(--np-line); }
+.noteTitle { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.noteTitle svg { color: var(--r-accent, var(--gold)); flex: none; }
+.noteTitle div { display: flex; flex-direction: column; min-width: 0; }
+.noteTitle small { color: var(--np-muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+.noteIcon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 0; background: transparent; color: var(--np-muted); cursor: pointer; }
+.noteIcon:hover { background: var(--np-line); color: var(--np-text); }
+.noteArea {
+  flex: 1; width: 100%; resize: none; border: 0; outline: none; padding: 14px 18px; background: transparent; color: var(--np-text);
+  font-family: var(--display); font-size: 17px; line-height: 1.7;
+  background-image: repeating-linear-gradient(transparent, transparent calc(1.7em - 1px), var(--np-line) calc(1.7em - 1px), var(--np-line) 1.7em);
+  background-attachment: local; background-position: 0 14px;
+}
+.noteArea::placeholder { color: var(--np-muted); opacity: .8; }
+.noteFoot { padding: 10px 14px 12px; border-top: 1px solid var(--np-line); display: grid; gap: 8px; }
+.noteActions { display: flex; gap: 6px; flex-wrap: wrap; }
+.noteActions button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border-radius: 999px; border: 1px solid var(--np-line); background: transparent; color: var(--np-text); font: inherit; font-size: 13px; cursor: pointer; }
+.noteActions button:hover:not(:disabled) { border-color: var(--r-accent, var(--gold)); }
+.noteActions button:disabled { opacity: .45; cursor: default; }
+.noteMeta { display: flex; justify-content: space-between; font-size: 12px; color: var(--np-muted); }
+.noteStatus { display: inline-flex; align-items: center; gap: 4px; }
+.noteHint { font-size: 12px; color: var(--np-muted); margin: 0; }
+.noteHint a { color: var(--r-accent, var(--gold)); font-weight: 600; margin-right: 6px; }
+
+.notesList { display: grid; gap: 12px; }
+.noteCard { display: grid; gap: 8px; padding: 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.noteCard header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.noteCard h3 { font-family: var(--display); font-size: 19px; margin: 0; }
+.noteCard pre { white-space: pre-wrap; font-family: var(--display); font-size: 15px; line-height: 1.6; color: var(--text-2); margin: 0; max-height: 9.6em; overflow: hidden; -webkit-mask-image: linear-gradient(#000 70%, transparent); mask-image: linear-gradient(#000 70%, transparent); }

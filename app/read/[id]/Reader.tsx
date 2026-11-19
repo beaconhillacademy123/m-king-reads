@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../../lib/supabase-browser';
 import { useAccount } from '../../../lib/account';
+import NotePad from '../../components/NotePad';
 import ShareReaderButton from '../../components/ShareReaderButton';
 import OfflineButton from '../../components/OfflineButton';
 import SponsorSlot from '../../components/SponsorSlot';
@@ -347,6 +348,8 @@ export default function Reader({
         <span>{Math.round(overallProgress)}% of book</span>
         <span>~{minutesLeft} min left in {chapterCount > 1 ? 'chapter' : 'book'}</span>
       </footer>
+
+      <NotePad bookKey={`book:${bookId}`} title={title} href={`/read/${bookId}${chapter > 1 ? `?chapter=${chapter}` : ''}`} context={chapterLabel} />
 
       {gate && (
         <div className="modalBack" onClick={() => setGate(null)}>
