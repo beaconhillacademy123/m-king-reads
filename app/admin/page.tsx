@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Check, Crown, Loader2, Plus, RefreshCw, Star, Trash2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase-browser';
 import { naira } from '../../lib/format';
+import LanguageContributionsAdmin from './LanguageContributionsAdmin';
 
 type Stats = { readers: number; plus_active: number; revenue_30d: number; revenue_total: number; pending: number; books: number; reading_minutes_7d: number };
 type Payment = { id: string; email: string; kind: string; billing_period: string | null; amount: number; payment_reference: string; payer_name: string | null; note: string | null; status: string; created_at: string; book_title?: string | null };
@@ -14,7 +15,7 @@ type Genre = { id: string; name: string };
 type Suggestion = { id: string; title: string; author: string | null; source_url: string | null; reason: string | null; status: string; created_at: string };
 type BillingRow = { plus_monthly_ngn: number; plus_yearly_ngn: number; sponsor_weekly_ngn: number; payment_enabled: boolean; bank_name: string | null; account_name: string | null; account_number: string | null; support_email: string | null; author_share_pct?: number };
 
-const TABS = ['Overview', 'Payments', 'Writers', 'Sponsors', 'Catalogue', 'Suggestions', 'Settings'] as const;
+const TABS = ['Overview', 'Payments', 'Language words', 'Writers', 'Sponsors', 'Catalogue', 'Suggestions', 'Settings'] as const;
 type Tab = (typeof TABS)[number];
 
 function msg(e: unknown) { return (e as { message?: string })?.message ?? 'Something went wrong.'; }
@@ -105,6 +106,7 @@ export default function AdminPage() {
         </section>
       )}
 
+      {tab === 'Language words' && <LanguageContributionsAdmin flash={flash} />}
       {tab === 'Writers' && <Writers flash={flash} />}
       {tab === 'Sponsors' && <Sponsors flash={flash} />}
       {tab === 'Catalogue' && <Catalogue flash={flash} />}
