@@ -2,20 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Check, Crown, Headphones, CloudDownload, Palette, BarChart3, Ban, HeartHandshake, X } from 'lucide-react';
+import { Check, Crown, Headphones, CloudDownload, Palette, BarChart3, Ban, Languages, X } from 'lucide-react';
 import Checkout from '../components/Checkout';
 import Footer from '../components/Footer';
 import { DEFAULT_BILLING, fetchBilling, useAccount, type Billing } from '../../lib/account';
 import { naira } from '../../lib/format';
 
-const ICONS = [Ban, CloudDownload, Headphones, Palette, BarChart3, HeartHandshake];
+const ICONS = [Ban, CloudDownload, Headphones, Palette, BarChart3, Languages];
 const FEATURES = [
   ['No ads, ever', 'A calm, distraction-free library and reader.'],
   ['Unlimited offline books', 'Download any book and read with zero data.'],
   ['Unlimited Read-Aloud', 'Listen to any chapter, at your own speed.'],
   ['Premium themes & fonts', 'Paper, Night and Midnight themes; Classic and Easy-read fonts.'],
   ['Reading stats & goals', '30-day reading history, streaks and daily goals.'],
-  ['Fund African reading', 'Your plan helps us add local books and writers.'],
+  ['Learn Yorùbá, Hausa & Igbo', 'Every audio lesson and course book — over 110 lessons.'],
 ];
 const COMPARE: [string, boolean | string, boolean | string][] = [
   ['Read every book in the library', true, true],
@@ -24,6 +24,8 @@ const COMPARE: [string, boolean | string, boolean | string][] = [
   ['Read-Aloud', 'Preview', 'Unlimited'],
   ['Premium themes & fonts', false, true],
   ['Reading stats history', '7 days', '30 days + goals'],
+  ['Naija language lessons', '3 per language', 'All 110+ lessons'],
+  ['Naija storybooks & phrases', true, true],
   ['Ads', 'Yes', 'None'],
 ];
 
@@ -65,7 +67,7 @@ export default function PremiumClient() {
           <p className="planPrice">{naira(price)}<small>/{period === 'yearly' ? 'year' : 'month'}</small></p>
           <p className="dim">{period === 'yearly' ? `Just ${naira(price / 12)} a month, billed once.` : 'Cancel anytime — it simply expires.'}</p>
           <button className="btn btnGold btnBlock btnLg" onClick={() => setOpen(true)}>{plus ? 'Renew / extend Plus' : 'Get Plus'}</button>
-          <ul>{FEATURES.slice(0, 4).map(([t]) => <li key={t}><Check size={15} /> {t}</li>)}</ul>
+          <ul>{[FEATURES[5], ...FEATURES.slice(0, 3)].map(([t]) => <li key={t}><Check size={15} /> {t}</li>)}</ul>
         </div>
       </section>
 

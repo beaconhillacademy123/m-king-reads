@@ -21,7 +21,7 @@ function isActive(path: string, href: string) {
 export default function AppNav() {
   const path = usePathname() || '/';
   const { user, plus } = useAccount();
-  if (path.startsWith('/read/') || /^\/free-books\/[^/]+\/read/.test(path)) return null;
+  if (path.startsWith('/naija/story/') || path.startsWith('/read/') || /^\/free-books\/[^/]+\/read/.test(path)) return null;
 
   return (
     <>
@@ -29,6 +29,7 @@ export default function AppNav() {
         <Link href="/" className="appBrand" aria-label="M King Reads home"><Logo /><span>M King <b>Reads</b></span></Link>
         <nav className="appLinks" aria-label="Main">
           {TABS.slice(0, 4).map(t => <Link key={t.href} href={t.href} className={isActive(path, t.href) ? 'on' : ''}>{t.label === 'Plus' ? 'Plus' : t.label}</Link>)}
+          <Link href="/naija" className={isActive(path, '/naija') ? 'on' : ''}>Naija Languages</Link>
           <Link href="/free-books" className={isActive(path, '/free-books') ? 'on' : ''}>70,000+ Free</Link>
         </nav>
         <div className="appActions">

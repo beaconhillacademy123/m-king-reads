@@ -758,3 +758,87 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
 .who-grown-ups { background: linear-gradient(150deg, rgba(226, 182, 92, .18), var(--surface) 70%); }
 .who-kids { background: linear-gradient(150deg, rgba(80, 200, 160, .18), var(--surface) 70%); }
 @media (max-width: 760px) { .whoGrid { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- Naija Languages ---------- */
+.naijaHero { text-align: center; padding: 26px 0 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.naijaHero h1 { font-size: clamp(36px, 6vw, 64px); }
+.naijaHero h1 em { font-style: italic; color: var(--gold); }
+.naijaHero p { color: var(--text-2); max-width: 620px; font-size: 17px; }
+.naijaHellos { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; font-family: var(--display); font-size: 22px; font-style: italic; margin-top: 6px; }
+.langGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 26px 0; }
+@media (max-width: 900px) { .langGrid { grid-template-columns: 1fr 1fr; } }
+.langCard { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 20px; border-radius: 22px; overflow: hidden;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--tint) 22%, transparent), var(--surface) 65%); border: 1px solid color-mix(in srgb, var(--tint) 35%, transparent); transition: transform .2s; }
+.langCard:hover { transform: translateY(-3px); }
+.langNative { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--tint); font-weight: 700; }
+.langCard strong { font-family: var(--display); font-size: 28px; }
+.langCard em { font-family: var(--display); font-size: 18px; color: var(--text); }
+.langCard em small { font-family: var(--sans); font-style: normal; font-size: 12px; color: var(--text-3); }
+.langCard ul { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; font-size: 13px; color: var(--text-2); }
+.langCard li { display: flex; gap: 6px; align-items: center; }
+.langGo { margin-top: 10px; font-weight: 700; font-size: 14px; color: var(--tint); display: inline-flex; align-items: center; }
+.langHead { display: flex; flex-direction: column; gap: 10px; margin: 8px 0 18px; }
+.langHead .kicker { color: var(--tint); }
+.langHead h1 { font-size: clamp(38px, 6vw, 58px); }
+.langHello { font-family: var(--display); font-size: 22px; font-style: italic; color: var(--tint); }
+.langHello span { font-family: var(--sans); font-style: normal; font-size: 15px; color: var(--text-3); }
+.phraseGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.phrase { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-radius: 14px; background: var(--bg-2); border-left: 3px solid var(--tint, var(--gold)); }
+.phrase strong { font-family: var(--display); font-size: 19px; }
+.phrase span { color: var(--text-3); font-size: 13px; }
+.sectionTitle h2 { display: flex; align-items: center; gap: 8px; }
+.storyGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px 16px; margin-top: 14px; }
+.storyCover .cover { aspect-ratio: 4 / 3; border-radius: 12px; }
+.lessonList { list-style: none; padding: 0; margin: 14px 0; display: grid; gap: 6px; max-height: 520px; overflow-y: auto; }
+.lessonList a { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; background: var(--bg-2); }
+.lessonList a:hover { background: var(--surface-2); }
+.lessonNo { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; background: var(--surface-2); color: var(--tint, var(--gold)); }
+.lessonTitle { flex: 1; display: flex; flex-direction: column; font-weight: 600; }
+.lessonTitle small { font-weight: 400; color: var(--text-3); font-size: 12px; }
+.freeTag { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 99px; background: rgba(111, 207, 151, .15); color: var(--green); }
+.lockTag { color: var(--text-3); }
+.naijaBand { max-width: 1240px; margin: 34px auto; padding: 26px clamp(20px, 4vw, 36px); border-radius: 26px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between;
+  background: radial-gradient(120% 140% at 0% 0%, rgba(0, 135, 81, .28), transparent 55%), linear-gradient(120deg, #11201a, #15141b); border: 1px solid rgba(0, 135, 81, .4); }
+@media (max-width: 1280px) { .home .naijaBand { margin-left: clamp(12px, 4vw, 40px); margin-right: clamp(12px, 4vw, 40px); } }
+.naijaBand h2 { font-size: clamp(24px, 3.2vw, 32px); margin: 8px 0; }
+.naijaBand p { color: var(--text-2); }
+.naijaBand .kicker { color: #6fcf97; }
+.naijaBandSmall { margin: 0 0 18px; display: block; }
+.naijaBandSmall h2 { font-size: 22px; }
+.naijaChips { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); gap: 10px; }
+@media (max-width: 700px) { .naijaChips { grid-template-columns: 1fr 1fr; width: 100%; } }
+.naijaChips a { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 16px; background: rgba(0, 0, 0, .25); border: 1px solid; }
+.naijaChips strong { font-family: var(--display); font-size: 18px; }
+.naijaChips small { font-family: var(--display); font-style: italic; font-size: 14px; }
+.storyRead { max-width: 900px; }
+.storyTop { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.storyStage { min-height: 60vh; }
+.storyPage { display: grid; grid-template-columns: 1.1fr 1fr; gap: 26px; align-items: center; padding: 18px; border-radius: 26px; background: #fbf8f2; color: #26221c; animation: rise .3s ease; cursor: pointer; }
+.storyPage img { width: 100%; border-radius: 16px; display: block; }
+.storyText { display: flex; flex-direction: column; gap: 14px; }
+.storyText h1 { font-size: clamp(28px, 4.4vw, 42px); }
+.storyText .dim { color: #857b6c; }
+.storyNative { font-family: var(--display); font-size: clamp(22px, 3vw, 30px); line-height: 1.45; white-space: pre-line; }
+.storyEn { font-size: 16px; color: #6d6456; border-top: 1px solid rgba(0, 0, 0, .1); padding-top: 12px; white-space: pre-line; }
+.storyCoverPage { cursor: default; }
+.storyEnd { grid-template-columns: 1fr; text-align: center; justify-items: center; cursor: default; padding: 40px 20px; }
+.storyEnd .adSlot { color: var(--text); width: 100%; }
+.storyEndMark { font-size: 34px; color: #a8741d; }
+@media (max-width: 700px) { .storyPage { grid-template-columns: 1fr; gap: 16px; padding: 12px; } }
+.storyNav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0; }
+.storyDots { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+.storyDots span { width: 7px; height: 7px; border-radius: 50%; background: var(--surface-2); }
+.storyDots span.done { background: rgba(226, 182, 92, .45); }
+.storyDots span.on { background: var(--gold); transform: scale(1.3); }
+.storyCredits { padding: 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); font-size: 14px; color: var(--text-2); }
+.storyCredits .fine { margin-top: 6px; }
+.lesson .player audio { width: 100%; }
+.playerTools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; font-size: 13.5px; color: var(--text-2); }
+.playerTools > span { display: inline-flex; gap: 6px; align-items: center; }
+.trackList { list-style: none; padding: 0; margin: 14px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; }
+.trackList button { width: 100%; display: flex; flex-direction: column; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg-2); text-align: left; font-weight: 600; font-size: 13px; }
+.trackList button small { color: var(--text-3); font-weight: 400; font-size: 11px; }
+.trackList button.on { border-color: var(--gold); color: var(--gold-2); }
+.tips { margin: 8px 0 14px; padding-left: 18px; color: var(--text-2); display: grid; gap: 6px; }
+.lockedCard { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 30px 20px; }
+.chapterNav.plain { border-top: 1px solid var(--line); }

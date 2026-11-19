@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BookOpen, ChevronRight, Crown, Headphones, Download, Sparkles, Globe2 } from 'lucide-react';
+import { LANGS } from '../lib/naija';
 import { AUDIENCES, forAudience, getCatalogue, getGenres, getGenre, type Book } from '../lib/booknest';
 import Rail from './components/Rail';
 import BookCover from './components/BookCover';
@@ -94,6 +95,17 @@ export default async function Home() {
               <em>{forAudience(books, a.id).length} books <ChevronRight size={14} /></em>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section className="naijaBand">
+        <div>
+          <span className="kicker"><span className="ng" /> NEW · NAIJA LANGUAGES</span>
+          <h2>Read and speak Yorùbá, Hausa, Igbo &amp; Pidgin</h2>
+          <p>Picture storybooks in your mother tongue, audio lessons from native speakers and everyday phrases.</p>
+        </div>
+        <div className="naijaChips">
+          {LANGS.map(l => <Link key={l.code} href={`/naija/${l.code}`} style={{ borderColor: l.tint }}><strong>{l.name}</strong><small style={{ color: l.tint }}>{l.hello}</small></Link>)}
         </div>
       </section>
 

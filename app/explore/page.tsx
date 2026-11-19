@@ -35,6 +35,10 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
       </nav>
 
       {!q && !audience && (
+        <Link href="/naija" className="naijaBand naijaBandSmall"><div><span className="kicker"><span className="ng" /> NAIJA LANGUAGES</span><h2>Yorùbá · Hausa · Igbo · Pidgin</h2><p>Storybooks, audio lessons and phrases →</p></div></Link>
+      )}
+
+      {!q && !audience && (
         <section className="genreGrid" aria-label="Genres">
           {genres.map(g => <Link key={g.id} href={`/genre/${g.slug}`} className="genreCard"><span>{g.icon}</span><strong>{g.name}</strong></Link>)}
         </section>
