@@ -17,7 +17,7 @@ export function generateStaticParams() { return LANGS.map(l => ({ lang: l.code }
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
   const l = langMeta(lang);
-  return l ? { title: `Learn & read ${l.name}`, description: `${l.name} storybooks, audio lessons and everyday phrases on M King Reads.` } : {};
+  return l ? { title: lang === 'enu' ? 'Enuani Dictionary & Language Guide' : `Learn & read ${l.name}`, description: lang === 'enu' ? 'Explore Enuani words, English meanings, pronunciation notes and examples, with attention to Aniocha and Oshimili varieties.' : `${l.name} storybooks, audio lessons and everyday phrases on M King Reads.` } : {};
 }
 
 export default async function LangPage({ params }: { params: Promise<{ lang: string }> }) {
@@ -34,7 +34,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
       <section className="langHead">
         <span className="kicker">{l.native.toUpperCase()}</span>
         <h1>{l.name}</h1>
-        <p className="langHello">{l.hello} <span>— {l.helloEn}</span></p>
+        {l.hello && <p className="langHello">{l.hello} <span>— {l.helloEn}</span></p>}
         <nav className="row">
           {lang === 'enu' ? <a className="pill" href="#dictionary">Dictionary</a> : <a className="pill" href="#phrases">Phrases</a>}
           {stories.length > 0 && <a className="pill" href="#stories">Storybooks ({stories.length})</a>}
@@ -47,8 +47,18 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
       {lang === 'enu' ? (
         <section id="dictionary" className="card">
           <div className="cardHead"><h3>Enuani–English dictionary</h3><span className="dim small">{dictionary.length} verified entries</span></div>
-          <p className="dim dictionaryIntro">Look up Enuani words, English meanings, pronunciation and example sentences.</p>
+          <p className="dim dictionaryIntro">Search in either direction: Enuani to English or English to Enuani. Entries retain their source and pronunciation notes where available.</p>
           <DictionarySearch entries={dictionary} />
+          <div className="enuaniGuide">
+            <h3>Enuani pronunciation & writing notes</h3>
+            <p>Enuani is tonal, and local speech varies between communities. These starter notes follow the Atụtụ inu Enuani reference; they are not a substitute for a speaker’s pronunciation.</p>
+            <ul>
+              <li>The vowel <strong>a</strong> is short, while <strong>e, i, o</strong> and <strong>u</strong> each have short and long forms.</li>
+              <li>Pay attention to consonant combinations such as <strong>gb, gw, kw, kp, nw</strong> and <strong>ny</strong>.</li>
+              <li>Tone can change meaning. The reference contrasts <strong>àkwà</strong> (bed) with <strong>ákwá</strong> (cry).</li>
+            </ul>
+            <p className="fine">Reference: <a href="https://enuani.squarespace.com/content" target="_blank" rel="noreferrer">Atụtụ inu — Enuani phonetics and orthography</a>. Spellings and usage can vary by town.</p>
+          </div>
         </section>
       ) : (
               <section id="phrases" className="card">
