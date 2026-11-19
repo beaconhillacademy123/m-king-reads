@@ -8,8 +8,8 @@ import Footer from '../components/Footer';
 
 export const revalidate = 600;
 export const metadata: Metadata = {
-  title: 'Naija Languages — read and learn Hausa, Yorùbá, Igbo & Pidgin',
-  description: 'Picture storybooks in Hausa, Yorùbá and Pidgin, audio courses to learn Hausa, Yorùbá and Igbo, everyday phrases and Nigerian heritage books.',
+  title: 'Naija Languages — Hausa, Yorùbá, Igbo, Pidgin & Enuani',
+  description: 'Picture storybooks, audio courses, everyday phrases and the Enuani dictionary, alongside Nigerian heritage books.',
 };
 
 export default async function NaijaHub() {
@@ -20,7 +20,7 @@ export default async function NaijaHub() {
       <section className="naijaHero">
         <span className="kicker"><span className="ng" /> NAIJA LANGUAGES</span>
         <h1>Read it. Hear it. <em>Speak it.</em></h1>
-        <p>Storybooks in your mother tongue, audio lessons from native speakers and everyday phrases — in Yorùbá, Hausa, Igbo and Pidgin.</p>
+        <p>Storybooks in your mother tongue, audio lessons from native speakers and language resources in Yorùbá, Hausa, Igbo, Pidgin and Enuani.</p>
         <div className="naijaHellos" aria-hidden>{LANGS.map(l => <span key={l.code} style={{ color: l.tint }}>{l.hello}</span>)}</div>
       </section>
 
@@ -36,7 +36,7 @@ export default async function NaijaHub() {
               <ul>
                 {s > 0 && <li><BookOpen size={14} /> {s} storybooks</li>}
                 {n > 0 && <li><Headphones size={14} /> {n} audio lessons</li>}
-                <li><MessageCircle size={14} /> Everyday phrases</li>
+                <li><MessageCircle size={14} /> {l.code === 'enu' ? 'Enuani dictionary' : 'Everyday phrases'}</li>
               </ul>
               <span className="langGo">Start <ChevronRight size={15} /></span>
             </Link>
