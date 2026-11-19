@@ -7,10 +7,10 @@ import { supabase } from '../../lib/supabase-browser';
 import { fetchBilling, useAccount, type Billing } from '../../lib/account';
 import { naira } from '../../lib/format';
 
-type Kind = 'plus' | 'tip' | 'sponsor';
+type Kind = 'plus' | 'tip' | 'sponsor' | 'book';
 
-export default function Checkout({ kind, period = 'monthly', amount: fixedAmount, onDone, presetNote = '' }: {
-  kind: Kind; period?: 'monthly' | 'yearly'; amount?: number; onDone?: () => void; presetNote?: string;
+export default function Checkout({ kind, period = 'monthly', amount: fixedAmount, onDone, presetNote = '', bookId }: {
+  kind: Kind; period?: 'monthly' | 'yearly'; amount?: number; onDone?: () => void; presetNote?: string; bookId?: string;
 }) {
   const { user, ready } = useAccount();
   const [billing, setBilling] = useState<Billing | null>(null);
@@ -41,6 +41,7 @@ export default function Checkout({ kind, period = 'monthly', amount: fixedAmount
     const { error: err } = await supabase.from('booknest_payment_requests').insert({
       user_id: user.id, kind, billing_period: kind === 'plus' ? period : null, amount,
       payment_reference: reference.trim(), payer_name: payer.trim() || null, note: note.trim() || null,
+      ...(kind === 'book' && bookId ? { book_id: bookId } : {}),
     });
     setBusy(false);
     if (err) { setError(err.message.replace(/^.*?:\s*/, '') || 'Could not submit. Please try again.'); return; }
@@ -68,7 +69,7 @@ export default function Checkout({ kind, period = 'monthly', amount: fixedAmount
       <div className="checkout checkoutDone">
         <div className="checkIcon"><Check size={26} /></div>
         <h3>Thank you! Payment submitted.</h3>
-        <p>{kind === 'plus' ? 'We will confirm your transfer and switch on Plus — usually within a few hours.' : kind === 'sponsor' ? 'We will confirm your transfer and contact you by email to set up your placement.' : 'Your support keeps M King Reads growing. We will confirm the transfer shortly.'}</p>
+        <p>{kind === 'plus' ? 'We will confirm your transfer and switch on Plus — usually within a few hours.' : kind === 'book' ? 'We will confirm your transfer and unlock every chapter — usually within a few hours.' : kind === 'sponsor' ? 'We will confirm your transfer and contact you by email to set up your placement.' : 'Your support keeps M King Reads growing. We will confirm the transfer shortly.'}</p>
         <Link className="btn btnGhost" href="/profile">View in my account</Link>
       </div>
     );
@@ -92,7 +93,7 @@ export default function Checkout({ kind, period = 'monthly', amount: fixedAmount
         {!fixedAmount && <label>Amount sent (₦)<input inputMode="numeric" value={amount || ''} onChange={e => setAmount(Number(e.target.value.replace(/\D/g, '')))} placeholder="e.g. 2000" /></label>}
         <label>Transfer reference / session ID<input value={reference} onChange={e => setReference(e.target.value)} placeholder="From your bank receipt" required /></label>
         <label>Name on the sending account <em>(optional)</em><input value={payer} onChange={e => setPayer(e.target.value)} placeholder="Helps us match your payment" /></label>
-        {kind !== 'plus' && <label>{kind === 'sponsor' ? 'Your business, link and what to promote' : 'Message (optional)'}<textarea value={note} onChange={e => setNote(e.target.value)} rows={3} maxLength={1000} required={kind === 'sponsor'} /></label>}
+        {kind !== 'plus' && kind !== 'book' && <label>{kind === 'sponsor' ? 'Your business, link and what to promote' : 'Message (optional)'}<textarea value={note} onChange={e => setNote(e.target.value)} rows={3} maxLength={1000} required={kind === 'sponsor'} /></label>}
       </div></div>
       {error && <p className="formError">{error}</p>}
       <button className="btn btnGold btnBlock" disabled={busy}>{busy ? <><Loader2 size={17} className="spin" /> Submitting…</> : 'I have sent the money'}</button>

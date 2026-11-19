@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Bookmark, Crown, Flame, HeartHandshake, LibraryBig, LogOut, Megaphone, MessageSquarePlus, Settings, Shield, Target, Timer } from 'lucide-react';
+import { Bookmark, Crown, Flame, HeartHandshake, LibraryBig, LogOut, Megaphone, MessageSquarePlus, PenLine, Settings, Shield, Target, Timer } from 'lucide-react';
 import { supabase } from '../../lib/supabase-browser';
 import { useAccount } from '../../lib/account';
 import { naira } from '../../lib/format';
@@ -107,6 +107,7 @@ export default function ProfilePage() {
         <Link href="/my-suggestions"><Settings size={18} /> My suggestions</Link>
         <Link href="/support"><HeartHandshake size={18} /> Support M King Reads</Link>
         <Link href="/advertise"><Megaphone size={18} /> Advertise with us</Link>
+        <Link href="/write" className="adminLink"><PenLine size={18} /> Writer Studio — publish a novel</Link>
         {admin && <Link href="/admin" className="adminLink"><Shield size={18} /> Admin dashboard</Link>}
         <button onClick={logout}><LogOut size={18} /> Log out</button>
       </nav>

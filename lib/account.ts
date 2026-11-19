@@ -7,12 +7,12 @@ import { supabase } from './supabase-browser';
 export type Billing = {
   plus_monthly_ngn: number; plus_yearly_ngn: number; sponsor_weekly_ngn: number;
   payment_enabled: boolean; bank_name: string | null; account_name: string | null; account_number: string | null;
-  support_email: string | null;
+  support_email: string | null; author_share_pct?: number;
 };
 
 export const DEFAULT_BILLING: Billing = {
   plus_monthly_ngn: 1000, plus_yearly_ngn: 9000, sponsor_weekly_ngn: 5000,
-  payment_enabled: false, bank_name: null, account_name: null, account_number: null, support_email: null,
+  payment_enabled: false, bank_name: null, account_name: null, account_number: null, support_email: null, author_share_pct: 60,
 };
 
 export type Subscription = { plan: string; status: string; expires_at: string | null; billing_period: string | null };

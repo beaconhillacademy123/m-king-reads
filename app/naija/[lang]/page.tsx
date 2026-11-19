@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, BookOpen, Crown, Headphones, Lock, Play } from 'lucide-react';
+import { ArrowLeft, BookOpen, Crown, Feather, Headphones, Lock, PenLine, Play } from 'lucide-react';
 import { LANGS, PHRASES, getCourse, getHeritage, getStories, langMeta, type LangCode } from '../../../lib/naija';
 import Rail from '../../components/Rail';
 import SponsorSlot from '../../components/SponsorSlot';
 import Footer from '../../components/Footer';
 import BookCover from '../../components/BookCover';
 import LessonLocks from './LessonLocks';
+import { getPublishedNovels } from '../../../lib/novels';
 
 export const revalidate = 600;
 export function generateStaticParams() { return LANGS.map(l => ({ lang: l.code })); }
@@ -22,7 +23,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   const l = langMeta(lang);
   if (!l) notFound();
-  const [stories, course, heritage] = await Promise.all([getStories(lang), getCourse(lang).catch(() => null), getHeritage(lang).catch(() => [])]);
+  const [stories, course, heritage, novels] = await Promise.all([getStories(lang), getCourse(lang).catch(() => null), getHeritage(lang).catch(() => []), getPublishedNovels({ lang, limit: 24 })]);
   const lessons = course?.booknest_lang_lessons ?? [];
   const phrases = PHRASES[lang as LangCode];
 
@@ -38,6 +39,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
           {stories.length > 0 && <a className="pill" href="#stories">Storybooks ({stories.length})</a>}
           {lessons.length > 0 && <a className="pill" href="#learn">Learn to speak ({lessons.length})</a>}
           {heritage.length > 0 && <a className="pill" href="#heritage">Heritage books</a>}
+          <a className="pill" href="#novels">Novels{novels.length ? ` (${novels.length})` : ''}</a>
         </nav>
       </section>
 
@@ -93,6 +95,22 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
       {lang === 'pcm' && (
         <div className="card"><h3>Learn Pidgin through stories</h3><p className="dim">There&apos;s no formal Pidgin course yet — the fastest way in is the storybooks above: every page has the English beside the Pidgin.</p></div>
       )}
+
+      <section id="novels" className="sectionTitle">
+        <h2><Feather size={20} /> {l.name} novels</h2>
+        <p className="dim">New novels by Nigerian writers. The first chapter is always free.</p>
+        {novels.length > 0 ? (
+          <div className="railTrack">
+            {novels.map(n => (
+              <Link key={n.id} href={`/novel/${n.id}`} className="tile"><div className="tileCoverWrap"><BookCover src={n.cover_url} title={n.title} author={n.booknest_authors?.pen_name} /></div>
+                <div className="tileText"><strong lang={lang}>{n.title}</strong><span>{n.booknest_authors?.pen_name}</span></div></Link>
+            ))}
+          </div>
+        ) : (
+          <div className="card writeCta"><div><h3>Be the first {l.name} novelist here</h3><p className="dim">Publish your story chapter by chapter and earn from every reader.</p></div>
+            <Link className="btn btnGold" href="/write"><PenLine size={16} /> Publish your novel</Link></div>
+        )}
+      </section>
 
       {heritage.length > 0 && <div id="heritage"><Rail title="Heritage books" kicker="HISTORY & FOLK TALES" books={heritage} /></div>}
       <Footer />

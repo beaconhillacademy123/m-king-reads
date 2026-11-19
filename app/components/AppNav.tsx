@@ -30,6 +30,7 @@ export default function AppNav() {
         <nav className="appLinks" aria-label="Main">
           {TABS.slice(0, 4).map(t => <Link key={t.href} href={t.href} className={isActive(path, t.href) ? 'on' : ''}>{t.label === 'Plus' ? 'Plus' : t.label}</Link>)}
           <Link href="/naija" className={isActive(path, '/naija') ? 'on' : ''}>Naija Languages</Link>
+          <Link href="/novels" className={isActive(path, '/novel') ? 'on' : ''}>Novels</Link>
           <Link href="/free-books" className={isActive(path, '/free-books') ? 'on' : ''}>70,000+ Free</Link>
         </nav>
         <div className="appActions">

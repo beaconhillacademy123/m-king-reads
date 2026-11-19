@@ -7,14 +7,14 @@ import { supabase } from '../../lib/supabase-browser';
 import { naira } from '../../lib/format';
 
 type Stats = { readers: number; plus_active: number; revenue_30d: number; revenue_total: number; pending: number; books: number; reading_minutes_7d: number };
-type Payment = { id: string; email: string; kind: string; billing_period: string | null; amount: number; payment_reference: string; payer_name: string | null; note: string | null; status: string; created_at: string };
+type Payment = { id: string; email: string; kind: string; billing_period: string | null; amount: number; payment_reference: string; payer_name: string | null; note: string | null; status: string; created_at: string; book_title?: string | null };
 type Sponsor = { id: string; title: string; body: string | null; cta: string; image_url: string | null; link_url: string; active: boolean; starts_at: string; ends_at: string; impressions: number; clicks: number };
 type BookRow = { id: string; title: string; author: string; is_featured: boolean; gutenberg_id: number | null; genre_id: string | null };
 type Genre = { id: string; name: string };
 type Suggestion = { id: string; title: string; author: string | null; source_url: string | null; reason: string | null; status: string; created_at: string };
 type BillingRow = { plus_monthly_ngn: number; plus_yearly_ngn: number; sponsor_weekly_ngn: number; payment_enabled: boolean; bank_name: string | null; account_name: string | null; account_number: string | null; support_email: string | null };
 
-const TABS = ['Overview', 'Payments', 'Sponsors', 'Catalogue', 'Suggestions', 'Settings'] as const;
+const TABS = ['Overview', 'Payments', 'Writers', 'Sponsors', 'Catalogue', 'Suggestions', 'Settings'] as const;
 type Tab = (typeof TABS)[number];
 
 function msg(e: unknown) { return (e as { message?: string })?.message ?? 'Something went wrong.'; }
@@ -90,7 +90,7 @@ export default function AdminPage() {
                 <tr key={p.id} className={p.status === 'pending' ? 'rowHot' : ''}>
                   <td>{new Date(p.created_at).toLocaleString('en-NG', { dateStyle: 'medium', timeStyle: 'short' })}</td>
                   <td>{p.email}{p.payer_name && <small>Sender: {p.payer_name}</small>}</td>
-                  <td>{p.kind === 'plus' ? `Plus · ${p.billing_period}` : p.kind === 'tip' ? 'Support' : 'Sponsor'}{p.note && <small>{p.note}</small>}</td>
+                  <td>{p.kind === 'plus' ? `Plus · ${p.billing_period}` : p.kind === 'book' ? `Book · ${p.book_title ?? ''}` : p.kind === 'tip' ? 'Support' : 'Sponsor'}{p.note && <small>{p.note}</small>}</td>
                   <td><b>{naira(p.amount)}</b></td>
                   <td className="mono">{p.payment_reference}</td>
                   <td><span className={`status status-${p.status}`}>{p.status}</span></td>
@@ -105,6 +105,7 @@ export default function AdminPage() {
         </section>
       )}
 
+      {tab === 'Writers' && <Writers flash={flash} />}
       {tab === 'Sponsors' && <Sponsors flash={flash} />}
       {tab === 'Catalogue' && <Catalogue flash={flash} />}
       {tab === 'Suggestions' && <Suggestions flash={flash} />}
@@ -329,5 +330,111 @@ function Settings({ flash }: { flash: (t: string) => void }) {
       <label className="check"><input type="checkbox" checked={b.payment_enabled} onChange={e => setB({ ...b, payment_enabled: e.target.checked })} /> Accept payments</label>
       <button className="btn btnGold">Save settings</button>
     </form>
+  );
+}
+
+type PendingBook = { id: string; title: string; description: string | null; language: string; genre: string; access: string; price_ngn: number; status: string; cover_url: string | null; mature: boolean; updated_at: string; author_id: string; booknest_authors: { pen_name: string } | null };
+type WriterRow = { user_id: string; pen_name: string; email: string; phone: string | null; payout_bank: string | null; payout_account_name: string | null; payout_account_number: string | null; status: string; books: number; published: number; readers: number; plus_reads_30d: number; unpaid: number; earned: number };
+
+function Writers({ flash }: { flash: (t: string) => void }) {
+  const [books, setBooks] = useState<PendingBook[]>([]);
+  const [writers, setWriters] = useState<WriterRow[]>([]);
+  const [preview, setPreview] = useState<{ book: PendingBook; chapters: { position: number; title: string; content: string; word_count: number }[] } | null>(null);
+  const [note, setNote] = useState('');
+  const [pool, setPool] = useState<Record<string, string>>({});
+  const [showLive, setShowLive] = useState(false);
+
+  const load = useCallback(async () => {
+    const q = supabase.from('booknest_author_books').select('id,title,description,language,genre,access,price_ngn,status,cover_url,mature,updated_at,author_id,booknest_authors(pen_name)').order('updated_at', { ascending: false }).limit(100);
+    const [{ data: b }, { data: w }] = await Promise.all([showLive ? q.neq('status', 'draft') : q.eq('status', 'pending'), supabase.rpc('booknest_admin_author_overview')]);
+    setBooks((b as unknown as PendingBook[]) ?? []);
+    setWriters((w as WriterRow[]) ?? []);
+  }, [showLive]);
+  useEffect(() => { void load(); }, [load]);
+
+  async function open(book: PendingBook) {
+    const { data } = await supabase.from('booknest_author_chapters').select('position,title,content,word_count').eq('book_id', book.id).order('position');
+    setNote(''); setPreview({ book, chapters: (data as { position: number; title: string; content: string; word_count: number }[]) ?? [] });
+  }
+  async function decide(id: string, decision: 'published' | 'rejected' | 'draft') {
+    if (decision === 'rejected' && !note.trim()) { flash('Add a note telling the writer what to fix.'); return; }
+    const { error } = await supabase.rpc('booknest_admin_review_book', { p_book: id, p_decision: decision, p_note: note });
+    if (error) { flash(msg(error)); return; }
+    flash(decision === 'published' ? 'Book is live' : decision === 'rejected' ? 'Sent back to the writer' : 'Unpublished');
+    setPreview(null); void load();
+  }
+  async function addPool(w: WriterRow) {
+    const amount = Number(pool[w.user_id] || 0);
+    if (!amount) return;
+    const { error } = await supabase.rpc('booknest_admin_add_earning', { p_author: w.user_id, p_amount: amount, p_note: `Plus pool ${new Date().toLocaleDateString('en-NG', { month: 'long', year: 'numeric' })}` });
+    if (error) { flash(msg(error)); return; }
+    setPool({ ...pool, [w.user_id]: '' }); flash('Earning added'); void load();
+  }
+  async function markPaid(w: WriterRow) {
+    if (!confirm(`Confirm you have sent ${naira(w.unpaid)} to ${w.pen_name} (${w.payout_bank ?? '?'} ${w.payout_account_number ?? ''})?`)) return;
+    const { data, error } = await supabase.rpc('booknest_admin_mark_paid', { p_author: w.user_id });
+    if (error) { flash(msg(error)); return; }
+    flash(`Marked ${naira(Number(data) || 0)} as paid`); void load();
+  }
+  async function setStatus(w: WriterRow) {
+    const next = w.status === 'active' ? 'suspended' : 'active';
+    if (next === 'suspended' && !confirm(`Suspend ${w.pen_name}? Their live books will be hidden.`)) return;
+    const { error } = await supabase.rpc('booknest_admin_set_author_status', { p_author: w.user_id, p_status: next });
+    if (error) flash(msg(error)); else void load();
+  }
+
+  const plusReads = writers.reduce((a, w) => a + Number(w.plus_reads_30d), 0);
+
+  return (
+    <>
+      <section className="card">
+        <div className="cardHead"><h3>{showLive ? 'All submitted books' : 'Books waiting for review'}</h3>
+          <div className="row"><button className="btn btnGhost btnSmall" onClick={() => setShowLive(!showLive)}>{showLive ? 'Show waiting only' : 'Show all'}</button><button className="btn btnGhost btnSmall" onClick={() => load()}><RefreshCw size={14} /></button></div></div>
+        <p className="dim small">Read the first chapters before publishing. Check that it is original, readable and in the language chosen. Reject with a clear note when changes are needed.</p>
+        {books.length === 0 ? <p className="dim">Nothing waiting. 🎉</p> : (
+          <div className="tableWrap"><table className="adminTable"><thead><tr><th>Book</th><th>Writer</th><th>Lang</th><th>Access</th><th>Status</th><th /></tr></thead>
+            <tbody>{books.map(b => <tr key={b.id} className={b.status === 'pending' ? 'rowHot' : ''}><td><b>{b.title}</b>{b.mature && <small>18+</small>}</td><td>{b.booknest_authors?.pen_name}</td><td>{b.language}</td>
+              <td>{b.access === 'paid' ? naira(b.price_ngn) : b.access}</td><td><span className={`status status-${b.status === 'published' ? 'approved' : b.status}`}>{b.status}</span></td>
+              <td><button className="btn btnGhost btnSmall" onClick={() => open(b)}>Review</button></td></tr>)}</tbody></table></div>
+        )}
+      </section>
+
+      {preview && (
+        <div className="modalBack" onClick={() => setPreview(null)}>
+          <div className="modal modalWide" onClick={e => e.stopPropagation()}>
+            <button className="modalClose" onClick={() => setPreview(null)} aria-label="Close">×</button>
+            <h3>{preview.book.title}</h3>
+            <p className="dim small">by {preview.book.booknest_authors?.pen_name} · {preview.book.language} · {preview.book.genre} · {preview.chapters.length} chapters · {preview.chapters.reduce((a, c) => a + c.word_count, 0).toLocaleString()} words</p>
+            {preview.book.description && <p>{preview.book.description}</p>}
+            <div className="reviewChapters">
+              {preview.chapters.slice(0, 3).map(c => <details key={c.position} open={c.position === 1}><summary>{c.position}. {c.title} <small>({c.word_count} words)</small></summary><div className="reviewText">{c.content.slice(0, 6000)}{c.content.length > 6000 ? '…' : ''}</div></details>)}
+            </div>
+            <label className="dim small">Note to writer (required to reject)<textarea rows={2} value={note} onChange={e => setNote(e.target.value)} maxLength={500} /></label>
+            <div className="row">
+              {preview.book.status !== 'published' && <button className="btn btnGold" onClick={() => decide(preview.book.id, 'published')}><Check size={15} /> Publish</button>}
+              {preview.book.status !== 'rejected' && <button className="btn btnGhost" onClick={() => decide(preview.book.id, 'rejected')}><X size={15} /> Needs changes</button>}
+              {preview.book.status === 'published' && <button className="btn btnGhost" onClick={() => decide(preview.book.id, 'draft')}>Unpublish</button>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <section className="card">
+        <div className="cardHead"><h3>Writers & payouts</h3><span className="dim small">{writers.length} writers · {plusReads} Plus chapter reads in 30 days</span></div>
+        <p className="dim small">Sales earnings are added automatically when you approve a book payment. Each month, decide how much Plus income to share and split it by Plus reads, then add each writer&apos;s share below. Pay them by bank transfer, then tap “Mark paid”.</p>
+        {writers.length === 0 ? <p className="dim">No writers yet. Share the /write page to invite them.</p> : (
+          <div className="tableWrap"><table className="adminTable"><thead><tr><th>Writer</th><th>Books</th><th>Plus reads (30d)</th><th>To pay</th><th>Bank</th><th>Add Plus share</th><th /></tr></thead>
+            <tbody>{writers.map(w => <tr key={w.user_id}>
+              <td><b>{w.pen_name}</b><small>{w.email}{w.phone ? ` · ${w.phone}` : ''}</small>{w.status !== 'active' && <small className="dangerText">Suspended</small>}</td>
+              <td>{w.published}/{w.books}<small>{w.readers} readers</small></td>
+              <td>{w.plus_reads_30d}{plusReads > 0 && <small>{Math.round((Number(w.plus_reads_30d) / plusReads) * 100)}% of pool</small>}</td>
+              <td><b>{naira(Number(w.unpaid))}</b><small>{naira(Number(w.earned))} all-time</small></td>
+              <td>{w.payout_bank ?? '—'}<small className="mono">{w.payout_account_number ?? ''} {w.payout_account_name ?? ''}</small></td>
+              <td><div className="row"><input className="miniInput" inputMode="numeric" placeholder="₦" value={pool[w.user_id] ?? ''} onChange={e => setPool({ ...pool, [w.user_id]: e.target.value.replace(/\D/g, '') })} /><button className="btn btnGhost btnSmall" onClick={() => addPool(w)}><Plus size={14} /></button></div></td>
+              <td><div className="row">{Number(w.unpaid) > 0 && <button className="btn btnGold btnSmall" onClick={() => markPaid(w)}>Mark paid</button>}<button className="btn btnGhost btnSmall" onClick={() => setStatus(w)}>{w.status === 'active' ? 'Suspend' : 'Restore'}</button></div></td>
+            </tr>)}</tbody></table></div>
+        )}
+      </section>
+    </>
   );
 }

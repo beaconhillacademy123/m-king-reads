@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { BookOpen, ChevronRight, Crown, Headphones, Download, Sparkles, Globe2 } from 'lucide-react';
+import { BookOpen, ChevronRight, Crown, Headphones, Download, Sparkles, Globe2, Feather, PenLine } from 'lucide-react';
 import { LANGS } from '../lib/naija';
+import { getPublishedNovels, langName } from '../lib/novels';
 import { AUDIENCES, forAudience, getCatalogue, getGenres, getGenre, type Book } from '../lib/booknest';
 import Rail from './components/Rail';
 import BookCover from './components/BookCover';
@@ -21,7 +22,7 @@ function dayIndex(len: number) {
 }
 
 export default async function Home() {
-  const [books, genres] = await Promise.all([getCatalogue(), getGenres()]);
+  const [books, genres, novels] = await Promise.all([getCatalogue(), getGenres(), getPublishedNovels({ limit: 16 })]);
   const featured = books.filter(b => b.is_featured);
   const spotlight = featured[dayIndex(featured.length)] ?? books[0];
   const heroStack = featured.filter(b => b.id !== spotlight?.id).slice(0, 4);
@@ -107,6 +108,24 @@ export default async function Home() {
         <div className="naijaChips">
           {LANGS.map(l => <Link key={l.code} href={`/naija/${l.code}`} style={{ borderColor: l.tint }}><strong>{l.name}</strong><small style={{ color: l.tint }}>{l.hello}</small></Link>)}
         </div>
+      </section>
+
+      {novels.length > 0 ? (
+        <section className="rail">
+          <div className="railHead"><div><span className="sectionKicker"><Feather size={13} /> NEW NAIJA NOVELS</span><h2>Fresh from Nigerian writers</h2></div><Link className="railMore" href="/novels">See all <ChevronRight size={15} /></Link></div>
+          <div className="railTrack">
+            {novels.map(n => (
+              <Link key={n.id} href={`/novel/${n.id}`} className="tile"><div className="tileCoverWrap"><BookCover src={n.cover_url} title={n.title} author={n.booknest_authors?.pen_name} /></div>
+                <div className="tileText"><strong>{n.title}</strong><span>{n.booknest_authors?.pen_name}</span><em>{langName(n.language)}</em></div></Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <section className="card writeCta">
+        <div><span className="kicker"><Feather size={13} /> FOR WRITERS</span><h3>Write in Yorùbá, Hausa, Igbo or Pidgin? Get paid for it.</h3>
+          <p className="dim">Publish your novel chapter by chapter. Readers unlock it, and you keep most of every sale.</p></div>
+        <Link className="btn btnGold" href="/write"><PenLine size={16} /> Publish your novel</Link>
       </section>
 
       <section className="africa">

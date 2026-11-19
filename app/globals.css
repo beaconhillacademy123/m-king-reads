@@ -842,3 +842,81 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
 .tips { margin: 8px 0 14px; padding-left: 18px; color: var(--text-2); display: grid; gap: 6px; }
 .lockedCard { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 30px 20px; }
 .chapterNav.plain { border-top: 1px solid var(--line); }
+
+/* ───────── Writer Studio & Naija novels ───────── */
+.pad { padding: 60px 0; display: grid; place-items: center; }
+.writePage { display: grid; gap: 18px; }
+.writeHero { padding: 34px 28px; border-radius: 26px; background: radial-gradient(120% 140% at 0% 0%, rgba(226,182,92,.2), transparent 60%), var(--surface); border: 1px solid var(--line); }
+.writeHero h1 { font-family: var(--display); font-size: clamp(32px, 6vw, 54px); line-height: 1.04; margin: 10px 0 12px; }
+.writeHero p { color: var(--text-2); max-width: 620px; font-size: 17px; }
+.writeHero.compact { margin-bottom: 22px; }
+.writeHero.compact h1 { font-size: clamp(28px, 5vw, 42px); }
+.writeHero .chipRow { margin-top: 18px; flex-wrap: wrap; }
+.writePerks { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }
+.writePerks div { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 16px; background: var(--bg-2); border: 1px solid var(--line); }
+.writePerks svg { color: var(--gold); margin-bottom: 4px; }
+.writePerks span { color: var(--text-3); font-size: 14px; }
+.writeForm { display: grid; gap: 14px; max-width: 640px; }
+.writeForm label, .editorGrid label { display: grid; gap: 6px; font-size: 14px; color: var(--text-2); }
+.writeForm label em { color: var(--text-3); font-style: normal; }
+.writeForm input:not([type=checkbox]):not([type=radio]), .writeForm textarea, .writeForm select, .chapterTitleInput, .chapterText {
+  width: 100%; padding: 12px 14px; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--line-2); color: var(--text); font: inherit; font-size: 16px;
+}
+.writeForm input:focus, .writeForm textarea:focus, .writeForm select:focus, .chapterText:focus, .chapterTitleInput:focus { outline: none; border-color: rgba(226,182,92,.6); }
+.checkLine { display: flex !important; grid-template-columns: none; align-items: flex-start; gap: 10px !important; }
+.checkLine input { margin-top: 3px; accent-color: var(--gold); width: 18px; height: 18px; flex: none; }
+.writeStats { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.writeStats strong { display: flex; align-items: center; gap: 6px; font-size: 24px; }
+.writeBooks { display: grid; gap: 8px; margin-top: 12px; }
+.writeBook { display: flex; align-items: center; gap: 14px; padding: 10px; border-radius: 14px; background: var(--bg-2); border: 1px solid transparent; }
+.writeBook:hover { border-color: var(--line-2); }
+.writeBookCover { width: 52px; aspect-ratio: 2 / 3; flex: none; border-radius: 8px; overflow: hidden; background: linear-gradient(160deg, #2b2340, #0b0d14); display: grid; place-items: center; color: var(--gold); font-family: var(--display); font-size: 22px; border: 1px solid var(--line-2); position: relative; padding: 0; cursor: pointer; }
+.writeBookCover img { width: 100%; height: 100%; object-fit: cover; }
+.writeBookCover.big { width: 132px; }
+.writeBookCover.big span { display: grid; justify-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; color: var(--text-2); }
+.coverSpin { position: absolute; color: #fff; }
+.writeBookText { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.writeBookText strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.statusTag { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); color: var(--text-2); white-space: nowrap; }
+.st-published.statusTag { background: rgba(111,207,151,.15); color: var(--green); }
+.st-pending.statusTag { background: rgba(226,182,92,.15); color: var(--gold); }
+.st-rejected.statusTag { background: rgba(239,125,109,.15); color: var(--red); }
+.statusNote { color: var(--text-2); margin-top: 4px; }
+.statusNote.st-published { color: var(--green); }
+.statusNote.st-rejected { color: var(--red); }
+.reviewNote { margin-top: 8px; padding: 12px 14px; border-radius: 12px; background: rgba(239,125,109,.1); border: 1px solid rgba(239,125,109,.3); color: var(--text); }
+.editorGrid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.editorGrid .writeForm { max-width: none; }
+@media (max-width: 860px) { .editorGrid { grid-template-columns: 1fr; } }
+.coverPick { display: flex; align-items: center; gap: 16px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.accessPick { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
+.accessPick legend { font-size: 14px; color: var(--text-2); margin-bottom: 6px; }
+.accessOpt { display: grid !important; grid-template-columns: auto 1fr; gap: 2px 10px !important; padding: 12px 14px; border-radius: 14px; background: var(--bg-2); border: 1px solid var(--line); cursor: pointer; }
+.accessOpt input { grid-row: span 2; accent-color: var(--gold); margin-top: 3px; }
+.accessOpt b { color: var(--text); }
+.accessOpt span { color: var(--text-3); font-size: 13px; }
+.accessOpt.on { border-color: rgba(226,182,92,.6); background: rgba(226,182,92,.08); }
+.dangerText { color: var(--red) !important; }
+.chapterEdit { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 6px; max-height: 420px; overflow-y: auto; }
+.chapterEdit button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; background: var(--bg-2); border: 1px solid transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.chapterEdit button.on { border-color: rgba(226,182,92,.6); }
+.grow { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chapterWriter { display: grid; gap: 12px; }
+.chapterTitleInput { font-family: var(--display); font-size: 22px !important; max-width: 520px; }
+.chapterText { min-height: 60vh; line-height: 1.75; font-family: var(--display); font-size: 18px !important; resize: vertical; }
+.writeCta { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; background: linear-gradient(120deg, rgba(226,182,92,.14), transparent 70%), var(--surface); }
+.writeCta h3 { font-family: var(--display); font-size: 22px; margin: 6px 0 4px; }
+.novelGrid { margin-bottom: 26px; }
+.lessonLocked { width: 100%; display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; background: var(--bg-2); border: 0; color: var(--text-2); font: inherit; text-align: left; cursor: pointer; }
+.novelReader { max-width: 760px; margin: 0 auto; }
+.novelBar { display: flex; justify-content: space-between; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 5; padding: 10px 0; background: linear-gradient(var(--bg) 70%, transparent); }
+.novelBar .backLink { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.novelText { font-family: var(--display); line-height: 1.8; color: #ece4d4; padding: 10px 4px 0; }
+.novelText h1 { font-size: 1.7em; line-height: 1.15; margin: 8px 0 26px; }
+.novelText p { margin: 0 0 1.1em; white-space: pre-line; }
+.novelText .kicker { font-family: var(--sans); font-size: 12px; }
+.reviewChapters { display: grid; gap: 8px; max-height: 46vh; overflow-y: auto; }
+.reviewChapters summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
+.reviewText { white-space: pre-wrap; font-family: var(--display); line-height: 1.7; color: var(--text-2); padding: 10px 12px; border-radius: 10px; background: var(--bg-2); }
+.miniInput { width: 90px; padding: 7px 10px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--line-2); color: var(--text); font: inherit; }
