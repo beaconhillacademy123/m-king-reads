@@ -24,7 +24,7 @@ export default function DictionarySearch({ entries, language = 'Enuani', langCod
         type="search"
         value={query}
         onChange={event => setQuery(event.target.value)}
-        placeholder="Search in Enuani or English…"
+        placeholder={`Search in ${language} or English…`}
       />
       {entries.length === 0 ? (
         <div className="dictionaryEmpty" role="status">
