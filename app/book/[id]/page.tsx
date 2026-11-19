@@ -10,7 +10,7 @@ import BookCover from '../../components/BookCover';
 import Rail from '../../components/Rail';
 import SponsorSlot from '../../components/SponsorSlot';
 import Footer from '../../components/Footer';
-import { getBook, getGenre, getSimilarBooks, readingMinutes } from '../../../lib/booknest';
+import { AUDIENCES, getBook, getGenre, getSimilarBooks, readingMinutes } from '../../../lib/booknest';
 import { hoursLabel } from '../../../lib/format';
 
 export const revalidate = 300;
@@ -47,7 +47,10 @@ export default async function BookPage({ params }: { params: Promise<{ id: strin
       <section className="bookHero">
         <BookCover src={book.cover_url} title={book.title} author={book.author} size="xl" />
         <div className="bookInfo">
-          {genre && <Link href={`/genre/${genre.slug}`} className="pill">{genre.icon} {genre.name}</Link>}
+          <div className="row">
+            {genre && <Link href={`/genre/${genre.slug}`} className="pill">{genre.icon} {genre.name}</Link>}
+            {book.vibe && <span className="pill pillVibe">{book.vibe}</span>}
+          </div>
           <h1>{book.title}</h1>
           <p className="byline">by <strong>{book.author}</strong></p>
           <div className="facts">
@@ -56,6 +59,7 @@ export default async function BookPage({ params }: { params: Promise<{ id: strin
             <span><Globe2 size={15} /> {book.language ?? 'English'}</span>
             <span className="free">Free</span>
           </div>
+          {(book.audience ?? []).length > 0 && <p className="forLine">Great for: {AUDIENCES.filter(a => book.audience!.includes(a.id)).map((a, i) => <span key={a.id}>{i ? ' · ' : ''}<Link href={`/explore?for=${a.id}`}>{a.emoji} {a.short}</Link></span>)}</p>}
           <div className="bookCtas">
             <Link className="btn btnGold btnLg" href={`/read/${id}`}><BookOpen size={18} /> Read now</Link>
             <ResumeBookButton bookId={id} />

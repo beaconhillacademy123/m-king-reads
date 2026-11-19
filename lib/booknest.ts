@@ -5,10 +5,11 @@ export type Book = {
   id: string; title: string; author: string; description: string | null; cover_url: string | null;
   source_name: string | null; source_url: string | null; license: string | null; read_url: string | null; download_url: string | null;
   is_featured: boolean; publication_year: number | null; language: string | null; gutenberg_id?: number | null;
+  audience?: string[] | null; vibe?: string | null;
   booknest_genres?: Genre | Genre[] | null;
 };
 
-const FIELDS = 'id,title,author,description,cover_url,source_name,source_url,license,read_url,download_url,is_featured,publication_year,language,gutenberg_id,booknest_genres(id,name,slug,icon)';
+const FIELDS = 'id,title,author,description,cover_url,source_name,source_url,license,read_url,download_url,is_featured,publication_year,language,gutenberg_id,audience,vibe,booknest_genres(id,name,slug,icon)';
 
 export async function getGenres() {
   return supabaseRest<Genre[]>('booknest_genres?select=id,name,slug,icon&order=name.asc');
@@ -68,4 +69,15 @@ export function readingMinutes(book: Book) {
   if (g === 'children' || g === 'poetry') return 60;
   if (g === 'history' || g === 'classics') return 540;
   return 360;
+}
+
+export const AUDIENCES = [
+  { id: 'teens', label: 'Teens & Gen Z', short: 'Teens', emoji: '🔥', blurb: 'Plot twists, dark romance, heists and monsters.' },
+  { id: 'young-adult', label: 'Young adults', short: 'Young adults', emoji: '✨', blurb: 'Love, ambition, identity and big decisions.' },
+  { id: 'grown-ups', label: 'Grown-ups', short: 'Grown-ups', emoji: '☕', blurb: 'The great novels, history and big ideas.' },
+  { id: 'kids', label: 'Kids', short: 'Kids', emoji: '🧸', blurb: 'Fairy tales, talking animals and adventure.' },
+] as const;
+
+export function forAudience(books: Book[], id: string) {
+  return books.filter(b => (b.audience ?? []).includes(id));
 }

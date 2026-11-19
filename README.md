@@ -1,5 +1,7 @@
 # M King Reads
 
+*A product of **PROMISEVISUALS** · Made in Nigeria 🇳🇬*
+
 A mobile-first digital library for Nigeria and the world: thousands of free classic and African books, a beautiful reader, offline downloads, Read-Aloud and an installable app. Built with Next.js 16, Supabase and Vercel.
 
 **Live app:** https://mkingreads.vercel.app

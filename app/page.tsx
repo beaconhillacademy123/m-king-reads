@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { BookOpen, ChevronRight, Crown, Headphones, Download, Sparkles, Globe2 } from 'lucide-react';
-import { getCatalogue, getGenres, getGenre, type Book } from '../lib/booknest';
+import { AUDIENCES, forAudience, getCatalogue, getGenres, getGenre, type Book } from '../lib/booknest';
 import Rail from './components/Rail';
 import BookCover from './components/BookCover';
 import ContinueReading from './components/ContinueReading';
@@ -28,9 +28,11 @@ export default async function Home() {
 
   const rails: { title: string; kicker: string; href: string; slugs: string[] }[] = [
     { title: 'Mystery & suspense', kicker: 'PAGE-TURNERS', href: '/genre/mystery', slugs: ['mystery'] },
+    { title: 'Epic adventures', kicker: 'ADVENTURE', href: '/genre/adventure', slugs: ['adventure'] },
     { title: 'Love stories', kicker: 'ROMANCE', href: '/genre/romance', slugs: ['romance'] },
     { title: 'Worlds beyond ours', kicker: 'SCI-FI & FANTASY', href: '/genre/science-fiction', slugs: ['science-fiction', 'fantasy'] },
     { title: 'Money, power & strategy', kicker: 'BUSINESS', href: '/genre/business', slugs: ['business', 'finance'] },
+    { title: 'Level up your life', kicker: 'SELF-GROWTH', href: '/genre/self-growth', slugs: ['self-growth'] },
     { title: 'For young readers', kicker: 'CHILDREN', href: '/genre/children', slugs: ['children'] },
     { title: 'After dark', kicker: 'HORROR & GOTHIC', href: '/genre/horror', slugs: ['horror'] },
     { title: 'Mind, faith & wisdom', kicker: 'PHILOSOPHY', href: '/genre/psychology', slugs: ['psychology', 'religion', 'education'] },
@@ -72,9 +74,28 @@ export default async function Home() {
         {genres.map(g => <Link key={g.id} href={`/genre/${g.slug}`} className="chip"><span>{g.icon}</span>{g.name}</Link>)}
       </nav>
 
-      <Rail title="Trending on M King Reads" kicker="TOP PICKS" href="/explore?sort=featured" books={featured.slice(0, 12)} ranked />
+      <section className="genz">
+        <Rail title="Gen Z picks" kicker="🔥 FOR TEENS & YOUNG READERS" subtitle="Dark romance, heists, monsters and plot twists — the classics that started it all."
+          href="/explore?for=teens" books={forAudience(books, 'teens').filter(b => b.vibe).slice(0, 18)} vibes />
+      </section>
+
+      <Rail title="Trending on M King Reads" kicker="TOP PICKS" href="/explore" books={featured.slice(0, 12)} ranked />
 
       <SponsorSlot />
+
+      <section className="whoReads" aria-label="Books for every reader">
+        <div className="railHead"><div><span className="kicker">FOR EVERY READER</span><h2>Who&apos;s reading today?</h2></div></div>
+        <div className="whoGrid">
+          {AUDIENCES.map(a => (
+            <Link key={a.id} href={`/explore?for=${a.id}`} className={`whoCard who-${a.id}`}>
+              <span className="whoEmoji">{a.emoji}</span>
+              <strong>{a.label}</strong>
+              <small>{a.blurb}</small>
+              <em>{forAudience(books, a.id).length} books <ChevronRight size={14} /></em>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <section className="africa">
         <div className="africaCopy">

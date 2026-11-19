@@ -84,6 +84,7 @@ export default function LoginForm() {
       </button>}
       <ul className="authPerks"><li>Save books &amp; sync progress across devices</li><li>Daily reading streaks</li><li>Free forever — upgrade to Plus anytime</li></ul>
       <Link className="authBack" href="/">← Back to library</Link>
+      <p className="pvByline">A product of <b>PROMISEVISUALS</b> <span className="ng" /></p>
     </div>
   </main>;
 }

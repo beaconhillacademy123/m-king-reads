@@ -182,7 +182,7 @@ function Catalogue({ flash }: { flash: (t: string) => void }) {
   const [genres, setGenres] = useState<Genre[]>([]);
   const [filter, setFilter] = useState('');
   const [gid, setGid] = useState('');
-  const [draft, setDraft] = useState<{ title: string; author: string; cover: string; description: string; genre_id: string; featured: boolean; year: string; deathYear: number | null } | null>(null);
+  const [draft, setDraft] = useState<{ title: string; author: string; cover: string; description: string; genre_id: string; featured: boolean; year: string; deathYear: number | null; vibe: string; aud: string[] } | null>(null);
   const [looking, setLooking] = useState(false);
   const load = useCallback(async () => {
     const [{ data: b }, { data: g }] = await Promise.all([
@@ -200,7 +200,7 @@ function Catalogue({ flash }: { flash: (t: string) => void }) {
     setLooking(true);
     try {
       const r = await fetch(`/api/gutenberg?id=${id}`).then(x => x.json());
-      setDraft({ title: r.title ?? '', author: r.author ?? '', cover: r.cover ?? '', description: r.summary ?? '', genre_id: genres[0]?.id ?? '', featured: false, year: '', deathYear: r.deathYear ?? null });
+      setDraft({ title: r.title ?? '', author: r.author ?? '', cover: r.cover ?? '', description: r.summary ?? '', genre_id: genres[0]?.id ?? '', featured: false, year: '', deathYear: r.deathYear ?? null, vibe: '', aud: [] });
       if (!r.found) flash('Catalogue lookup timed out — fill in the title and author yourself.');
     } catch (err) { flash(msg(err)); }
     setLooking(false);
@@ -212,7 +212,7 @@ function Catalogue({ flash }: { flash: (t: string) => void }) {
     const { error } = await supabase.from('booknest_books').insert({
       gutenberg_id: id, title: draft.title.trim(), author: draft.author.trim(), cover_url: draft.cover || null,
       description: draft.description.trim().slice(0, 600) || null, genre_id: draft.genre_id || null, is_featured: draft.featured,
-      publication_year: Number(draft.year) || null, source_name: 'Project Gutenberg', source_url: `https://www.gutenberg.org/ebooks/${id}`,
+      publication_year: Number(draft.year) || null, vibe: draft.vibe.trim() || null, audience: draft.aud, source_name: 'Project Gutenberg', source_url: `https://www.gutenberg.org/ebooks/${id}`,
       read_url: `https://www.gutenberg.org/ebooks/${id}`, download_url: `https://www.gutenberg.org/ebooks/${id}`, language: 'English',
       license: 'Project Gutenberg item: verify Nigerian/local copyright status before redistribution',
     });
@@ -242,6 +242,10 @@ function Catalogue({ flash }: { flash: (t: string) => void }) {
           <label>First published (year)<input value={draft.year} onChange={e => setDraft({ ...draft, year: e.target.value })} inputMode="numeric" /></label>
           <label className="span">Cover URL<input value={draft.cover} onChange={e => setDraft({ ...draft, cover: e.target.value })} /></label>
           <label className="span">Short description<textarea rows={3} value={draft.description} onChange={e => setDraft({ ...draft, description: e.target.value })} /></label>
+          <label>Gen Z hook (optional, e.g. “Enemies to lovers 💘”)<input value={draft.vibe} maxLength={60} onChange={e => setDraft({ ...draft, vibe: e.target.value })} /></label>
+          <div className="span row">{[['kids', 'Kids'], ['teens', 'Teens'], ['young-adult', 'Young adults'], ['grown-ups', 'Grown-ups']].map(([id, label]) => (
+            <label key={id} className="check"><input type="checkbox" checked={draft.aud.includes(id)} onChange={e => setDraft({ ...draft, aud: e.target.checked ? [...draft.aud, id] : draft.aud.filter(x => x !== id) })} /> {label}</label>
+          ))}</div>
           <label className="check"><input type="checkbox" checked={draft.featured} onChange={e => setDraft({ ...draft, featured: e.target.checked })} /> Feature on home page</label>
           <div className="row"><button className="btn btnGold" onClick={add} disabled={!draft.title || !draft.author}><Plus size={15} /> Add to catalogue</button><button className="btn btnGhost" onClick={() => setDraft(null)}>Cancel</button></div>
         </section>

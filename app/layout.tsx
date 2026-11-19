@@ -6,6 +6,7 @@ import OfflineStatus from './components/OfflineStatus';
 import InstallPrompt from './components/InstallPrompt';
 import CopyrightNotice from './components/CopyrightNotice';
 import AppNav from './components/AppNav';
+import BrandSplash from './components/BrandSplash';
 
 const display = Fraunces({ subsets: ['latin'], variable: '--font-display', display: 'swap', axes: ['opsz'] });
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
@@ -18,6 +19,9 @@ export const metadata: Metadata = {
   title: { default: 'M King Reads — Free books, beautifully read', template: '%s · M King Reads' },
   description: 'Read thousands of free classic and African books on your phone. Save your shelf, keep your place, read offline and listen with Read-Aloud.',
   applicationName: 'M King Reads',
+  authors: [{ name: 'PROMISEVISUALS' }],
+  creator: 'PROMISEVISUALS',
+  publisher: 'PROMISEVISUALS',
   manifest: '/manifest.webmanifest',
   appleWebApp: { capable: true, title: 'M King Reads', statusBarStyle: 'black-translucent' },
   formatDetection: { telephone: false },
@@ -39,8 +43,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html lang="en" className={`${display.variable} ${sans.variable}`} suppressHydrationWarning>
       <body>
+        <BrandSplash />
         <AppNav />
         <OfflineStatus />
         <div className="appMain">{children}</div>

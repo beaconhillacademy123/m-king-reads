@@ -2,7 +2,7 @@
   "id": "/",
   "name": "M King Reads",
   "short_name": "King Reads",
-  "description": "Free classic and African books in a beautiful reader. Read offline and listen with Read-Aloud.",
+  "description": "Free classic and African books in a beautiful reader. A product of PROMISEVISUALS, made in Nigeria.",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
