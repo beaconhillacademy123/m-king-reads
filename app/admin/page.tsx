@@ -12,7 +12,7 @@ type Sponsor = { id: string; title: string; body: string | null; cta: string; im
 type BookRow = { id: string; title: string; author: string; is_featured: boolean; gutenberg_id: number | null; genre_id: string | null };
 type Genre = { id: string; name: string };
 type Suggestion = { id: string; title: string; author: string | null; source_url: string | null; reason: string | null; status: string; created_at: string };
-type BillingRow = { plus_monthly_ngn: number; plus_yearly_ngn: number; sponsor_weekly_ngn: number; payment_enabled: boolean; bank_name: string | null; account_name: string | null; account_number: string | null; support_email: string | null };
+type BillingRow = { plus_monthly_ngn: number; plus_yearly_ngn: number; sponsor_weekly_ngn: number; payment_enabled: boolean; bank_name: string | null; account_name: string | null; account_number: string | null; support_email: string | null; author_share_pct?: number };
 
 const TABS = ['Overview', 'Payments', 'Writers', 'Sponsors', 'Catalogue', 'Suggestions', 'Settings'] as const;
 type Tab = (typeof TABS)[number];
@@ -312,7 +312,10 @@ function Settings({ flash }: { flash: (t: string) => void }) {
       p_plus_monthly: b.plus_monthly_ngn, p_plus_yearly: b.plus_yearly_ngn, p_sponsor_weekly: b.sponsor_weekly_ngn, p_enabled: b.payment_enabled,
       p_bank: b.bank_name ?? '', p_account_name: b.account_name ?? '', p_account_number: b.account_number ?? '', p_support_email: b.support_email ?? '',
     });
-    flash(error ? error.message : 'Settings saved');
+    if (error) { flash(error.message); return; }
+    const pct = Math.min(100, Math.max(0, Number(b.author_share_pct ?? 60)));
+    const { error: e2 } = await supabase.rpc('booknest_admin_set_author_share', { p_pct: pct });
+    flash(e2 ? e2.message : 'Settings saved');
   }
   if (!b) return <p className="dim">Loading…</p>;
   const num = (k: keyof BillingRow) => (e: React.ChangeEvent<HTMLInputElement>) => setB({ ...b, [k]: Number(e.target.value.replace(/\D/g, '')) });
@@ -323,6 +326,7 @@ function Settings({ flash }: { flash: (t: string) => void }) {
       <label>Plus monthly (₦)<input value={b.plus_monthly_ngn} onChange={num('plus_monthly_ngn')} inputMode="numeric" /></label>
       <label>Plus yearly (₦)<input value={b.plus_yearly_ngn} onChange={num('plus_yearly_ngn')} inputMode="numeric" /></label>
       <label>Sponsor per week (₦)<input value={b.sponsor_weekly_ngn} onChange={num('sponsor_weekly_ngn')} inputMode="numeric" /></label>
+      <label>Writer share of book sales (%)<input value={b.author_share_pct ?? 60} onChange={e => setB({ ...b, author_share_pct: Math.min(100, Number(e.target.value.replace(/\D/g, '')) || 0) })} inputMode="numeric" /><small className="dim">Applies to new sales. Writer Studio shows this number.</small></label>
       <label>Bank<input value={b.bank_name ?? ''} onChange={txt('bank_name')} /></label>
       <label>Account name<input value={b.account_name ?? ''} onChange={txt('account_name')} /></label>
       <label>Account number<input value={b.account_number ?? ''} onChange={txt('account_number')} inputMode="numeric" /></label>
