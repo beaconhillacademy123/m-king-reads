@@ -46,8 +46,8 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
 
       {lang === 'enu' ? (
         <section id="dictionary" className="card">
-          <div className="cardHead"><h3>Enuani–English dictionary</h3><span className="dim small">{dictionary.length} sourced entries</span></div>
-          <p className="dim dictionaryIntro">Search in either direction: Enuani to English or English to Enuani. Entries retain their source and pronunciation notes where available.</p>
+          <div className="cardHead"><h3>Enuani–English dictionary & sayings</h3><span className="dim small">{dictionary.length} sourced entries</span></div>
+          <p className="dim dictionaryIntro">Search in either direction: Enuani to English or English to Enuani. Explore sourced vocabulary, proverbs and real-life usage examples.</p>
           <DictionarySearch entries={dictionary} />
           <div className="enuaniGuide">
             <h3>Enuani pronunciation & writing notes</h3>
