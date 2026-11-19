@@ -9,7 +9,7 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
     const q = query.trim().toLocaleLowerCase();
     if (!q) return entries;
     return entries.filter(entry =>
-      [entry.term, entry.definition, entry.pronunciation, entry.part_of_speech]
+      [entry.term, entry.definition, entry.pronunciation, entry.part_of_speech, entry.example_native, entry.example_en, entry.source]
         .some(value => value?.toLocaleLowerCase().includes(q))
     );
   }, [entries, query]);
@@ -23,7 +23,7 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
         type="search"
         value={query}
         onChange={event => setQuery(event.target.value)}
-        placeholder="Search an Enuani word or English meaning…"
+        placeholder="Search Enuani → English or English → Enuani…"
       />
       {entries.length === 0 ? (
         <div className="dictionaryEmpty" role="status">
@@ -49,7 +49,8 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
                 </div>
               )}
               {entry.source && <a className="dictionarySource" href={entry.source} target="_blank" rel="noreferrer">Source</a>}
-            </article>
+                {entry.source && <small className="dictionarySource">Source: {entry.source}</small>}
+          </article>
           ))}
         </div>
       )}
