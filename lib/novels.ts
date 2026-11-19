@@ -1,6 +1,6 @@
 import { supabaseRest } from './supabase-rest';
 
-export type NovelLang = 'en' | 'ha' | 'yo' | 'ig' | 'pcm';
+export type NovelLang = 'en' | 'ha' | 'yo' | 'ig' | 'pcm' | 'enu';
 export type NovelAccess = 'free' | 'plus' | 'paid';
 export type NovelStatus = 'draft' | 'pending' | 'published' | 'rejected';
 
@@ -9,6 +9,7 @@ export const NOVEL_LANGS: { code: NovelLang; name: string }[] = [
   { code: 'ha', name: 'Hausa' },
   { code: 'ig', name: 'Igbo' },
   { code: 'pcm', name: 'Pidgin' },
+  { code: 'enu', name: 'Enuani' },
   { code: 'en', name: 'English' },
 ];
 
