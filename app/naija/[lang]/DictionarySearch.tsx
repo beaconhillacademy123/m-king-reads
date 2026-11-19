@@ -3,7 +3,7 @@
 import { useId, useMemo, useState } from 'react';
 import type { DictionaryEntry } from '../../../lib/naija';
 
-export default function DictionarySearch({ entries }: { entries: DictionaryEntry[] }) {
+export default function DictionarySearch({ entries, language = 'Enuani', langCode = 'enu' }: { entries: DictionaryEntry[]; language?: string; langCode?: string }) {
   const [query, setQuery] = useState('');
   const searchId = useId();
   const filtered = useMemo(() => {
@@ -17,7 +17,7 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
 
   return (
     <div>
-      <label className="srOnly" htmlFor={searchId}>Search the Enuani dictionary</label>
+      <label className="srOnly" htmlFor={searchId}>Search the language dictionary</label>
       <input
         id={searchId}
         className="dictionarySearch"
@@ -28,8 +28,8 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
       />
       {entries.length === 0 ? (
         <div className="dictionaryEmpty" role="status">
-          <strong>The Enuani dictionary is being compiled.</strong>
-          <p>Sourced entries will appear here with their English meanings and pronunciation.</p>
+          <strong>The dictionary is being compiled.</strong>
+          <p>Verified entries will appear here with their English meanings and pronunciation.</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="dictionaryEmpty" role="status">No matching words found.</div>
@@ -40,7 +40,7 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
             return (
               <article className="dictionaryEntry" key={entry.id}>
                 <div className="dictionaryEntryHead">
-                  <strong lang="enu">{entry.term}</strong>
+                  <strong lang={langCode}>{entry.term}</strong>
                   {entry.part_of_speech && <small>{entry.part_of_speech}</small>}
                 </div>
                 {entry.pronunciation && <span className="dictionaryPronunciation">Pronunciation: {entry.pronunciation}</span>}
