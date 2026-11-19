@@ -1,121 +1,127 @@
 import Link from 'next/link';
-import { BookOpen, Search, Sparkles, ChevronRight, Bookmark, Globe2, LibraryBig } from 'lucide-react';
-import SaveBookButton from './components/SaveBookButton';
+import { BookOpen, ChevronRight, Crown, Headphones, Download, Sparkles, Globe2 } from 'lucide-react';
+import { getCatalogue, getGenres, getGenre, type Book } from '../lib/booknest';
+import Rail from './components/Rail';
+import BookCover from './components/BookCover';
 import ContinueReading from './components/ContinueReading';
-import { getBooks, getGenres, getGenre, searchBooks } from '../lib/booknest';
+import SponsorSlot from './components/SponsorSlot';
+import SaveBookButton from './components/SaveBookButton';
+import Footer from './components/Footer';
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const params = await searchParams;
-  const q = params.q?.trim() ?? '';
-  const [genres, books] = await Promise.all([
-    getGenres(),
-    q ? searchBooks(q, 24) : getBooks(24)
-  ]);
+export const revalidate = 300;
 
-  const featured = books.filter(b => b.is_featured);
-  const primaryBooks = q ? books : (featured.length ? featured : books).slice(0, 8);
-  const africanBooks = books.filter(b => {
-    const g = getGenre(b);
-    return g?.slug === 'african-literature';
-  }).slice(0, 4);
-  const otherBooks = books.filter(b => !primaryBooks.some(p => p.id === b.id)).slice(0, 8);
-
-  return <main><ContinueReading />
-    <header className="topbar">
-      <Link href="/" className="brand"><div className="logo"><BookOpen size={22}/></div><span>M King Reads</span></Link>
-      <nav><Link className="active" href="/">Home</Link><Link href="/free-books">Free Books</Link><Link href="/#genres">Genres</Link><Link href="/library">My Library</Link></nav>
-      <Link href="/login" className="login">Log in</Link>
-    </header>
-
-    <section className="hero heroNew">
-      <div className="heroText">
-        <span className="eyebrow"><Sparkles size={15}/> WELCOME TO M KING READS</span>
-        <h1>Stories worth<br/><em>your time.</em></h1>
-        <p>Discover books to read, save and return to whenever you want — all in one growing digital library.</p>
-        <form className="search searchNew" action="/" method="get">
-          <Search size={19}/><input name="q" defaultValue={q} placeholder="Search books, authors or topics..."/><button>Search</button>
-        </form>
-        <div className="heroLinks"><Link href="/#featured">Explore books <ChevronRight size={16}/></Link><Link href="/#genres">Browse genres <ChevronRight size={16}/></Link></div>
-      </div>
-      <div className="heroShowcase">
-        <div className="heroBadge">READ • SAVE • RETURN</div>
-        <div className="heroBooks">
-          {primaryBooks.slice(0,3).map((b,i)=><Link key={b.id} href={`/book/${b.id}`} className={`heroBook heroBook${i+1}`} style={{backgroundImage:b.cover_url ? `url("${b.cover_url}")` : undefined}} aria-label={b.title}/>)}
-        </div>
-        <div className="heroCardCopy"><strong>A growing library.</strong><span>Find your next favourite story.</span></div>
-      </div>
-    </section>
-
-    <section className="trustStrip">
-      <div><BookOpen size={20}/><span><strong>Read online</strong><small>Comfortable built-in reader</small></span></div>
-      <div><Bookmark size={20}/><span><strong>Save your books</strong><small>Keep a personal shelf</small></span></div>
-      <div><LibraryBig size={20}/><span><strong>Track your reading</strong><small>Pick up where you stopped</small></span></div>
-      <div><Globe2 size={20}/><span><strong>Made to grow</strong><small>More books and features ahead</small></span></div>
-    </section>
-
-    <section className="section" id="genres">
-      <div className="sectionHead"><div><h2>Explore by genre</h2><p>Something for every kind of reader.</p></div><Link href="/#genres">View all <ChevronRight size={17}/></Link></div>
-      <div className="genres genresNew">{genres.map(g=><Link className="genre" href={`/genre/${g.slug}`} key={g.id}><span>{g.icon}</span><strong>{g.name}</strong><small>Explore</small></Link>)}</div>
-    </section>
-
-    <section className="section bookSection" id="featured">
-      <div className="sectionHead"><div><span className="sectionKicker">HANDPICKED FOR YOU</span><h2>{q ? `Search results for “${q}”` : 'Featured books'}</h2><p>{q ? `${books.length} book${books.length === 1 ? '' : 's'} found.` : 'A selection to help you discover your next read.'}</p></div></div>
-      {books.length === 0 ? <div className="empty">No books matched that search yet. Try another title, author or topic.</div> : <div className="books booksNew">{primaryBooks.map(b=><BookCard key={b.id} book={b}/>)}</div>}
-    </section>
-
-    {!q && africanBooks.length > 0 && <section className="section africanSection">
-      <div className="africanBanner">
-        <div><span className="sectionKicker">FROM OUR CONTINENT</span><h2>Stories from Africa.</h2><p>Explore African voices, literature and stories as the collection grows.</p></div>
-        <Link className="bannerButton" href="/genre/african-literature">Explore African Literature <ChevronRight size={17}/></Link>
-      </div>
-      <div className="books booksNew compactBooks">{africanBooks.map(b=><BookCard key={b.id} book={b}/>)}</div>
-    </section>}
-
-    {!q && otherBooks.length > 0 && <section className="section">
-      <div className="sectionHead"><div><span className="sectionKicker">KEEP EXPLORING</span><h2>More to discover</h2><p>There is always another book waiting.</p></div></div>
-      <div className="books booksNew">{otherBooks.map(b=><BookCard key={b.id} book={b}/>)}</div>
-    </section>}
-
-    {!q && <section className="section freeBooksFeature">
-      <div className="freeBooksFeatureCard">
-        <div className="freeBooksFeatureArt">
-          <div className="freeBooksFeatureBook">M</div>
-          <div className="freeBooksFeatureBook">K</div>
-          <div className="freeBooksFeatureBook">R</div>
-        </div>
-        <div className="freeBooksFeatureCopy">
-          <span className="sectionKicker">OPEN COLLECTION</span>
-          <h2>Thousands of books. One place to read.</h2>
-          <p>Explore a live collection from Project Gutenberg and read available editions directly inside M King Reads.</p>
-          <Link className="bannerButton" href="/free-books">Explore Free Books <ChevronRight size={17}/></Link>
-        </div>
-      </div>
-    </section>}
-
-    <section className="section howSection" data-section="how-it-works">
-      <div className="sectionHead"><div><span className="sectionKicker">HOW IT WORKS</span><h2>Made for reading, not searching.</h2><p>Everything you need to discover a book and keep your place.</p></div></div>
-      <div className="howGrid">
-        <div className="howCard"><span className="howNumber">01</span><BookOpen size={24}/><h3>Discover</h3><p>Browse genres, search the catalogue or explore the growing free collection.</p></div>
-        <div className="howCard"><span className="howNumber">02</span><Bookmark size={24}/><h3>Save</h3><p>Keep books on your personal shelf and build a library that belongs to you.</p></div>
-        <div className="howCard"><span className="howNumber">03</span><LibraryBig size={24}/><h3>Keep reading</h3><p>Use the built-in reader, bookmarks and saved progress to return where you stopped.</p></div>
-      </div>
-    </section>
-
-    <section className="section ctaSection">
-      <div className="ctaBox">
-        <div><span className="sectionKicker">YOUR PERSONAL SHELF</span><h2>Save books now. Come back anytime.</h2><p>Create a free account to build your own library and keep track of your reading.</p></div>
-        <Link className="ctaButton" href="/login">Create my free library <ChevronRight size={17}/></Link>
-      </div>
-    </section>
-
-    <footer><div><div className="brand"><div className="logo"><BookOpen size={19}/></div><span>M King Reads</span></div><p>A growing digital library for curious minds.</p></div><div className="footerLinks"><Link href="/copyright">Copyright &amp; Sources</Link><Link href="/free-books">Free Books</Link><Link href="/login">My Library</Link></div></footer>
-  </main>
+function bySlugs(books: Book[], slugs: string[]) {
+  return books.filter(b => slugs.includes(getGenre(b)?.slug ?? ''));
 }
 
-function BookCard({book}: {book: any}) {
-  const genre = getGenre(book);
-  return <article className="book bookNew">
-    <Link href={`/book/${book.id}`} className="cover" style={{backgroundImage:book.cover_url ? `url("${book.cover_url}")` : undefined}} aria-label={book.title} />
-    <div className="bookInfo"><span className="cardGenre">{genre?.icon} {genre?.name ?? 'Free book'}</span><Link href={`/book/${book.id}`}><h3>{book.title}</h3></Link><p className="author">{book.author}</p><p>{book.description ?? 'A free book available through M King Reads.'}</p><div className="actions"><Link className="read" href={`/book/${book.id}`}>View book</Link><SaveBookButton bookId={book.id} /></div></div>
-  </article>;
+function dayIndex(len: number) {
+  const d = new Date();
+  return len ? (d.getUTCFullYear() * 372 + d.getUTCMonth() * 31 + d.getUTCDate()) % len : 0;
+}
+
+export default async function Home() {
+  const [books, genres] = await Promise.all([getCatalogue(), getGenres()]);
+  const featured = books.filter(b => b.is_featured);
+  const spotlight = featured[dayIndex(featured.length)] ?? books[0];
+  const heroStack = featured.filter(b => b.id !== spotlight?.id).slice(0, 4);
+  const spotlightGenre = spotlight ? getGenre(spotlight) : null;
+
+  const rails: { title: string; kicker: string; href: string; slugs: string[] }[] = [
+    { title: 'Mystery & suspense', kicker: 'PAGE-TURNERS', href: '/genre/mystery', slugs: ['mystery'] },
+    { title: 'Love stories', kicker: 'ROMANCE', href: '/genre/romance', slugs: ['romance'] },
+    { title: 'Worlds beyond ours', kicker: 'SCI-FI & FANTASY', href: '/genre/science-fiction', slugs: ['science-fiction', 'fantasy'] },
+    { title: 'Money, power & strategy', kicker: 'BUSINESS', href: '/genre/business', slugs: ['business', 'finance'] },
+    { title: 'For young readers', kicker: 'CHILDREN', href: '/genre/children', slugs: ['children'] },
+    { title: 'After dark', kicker: 'HORROR & GOTHIC', href: '/genre/horror', slugs: ['horror'] },
+    { title: 'Mind, faith & wisdom', kicker: 'PHILOSOPHY', href: '/genre/psychology', slugs: ['psychology', 'religion', 'education'] },
+    { title: 'History that shaped us', kicker: 'HISTORY', href: '/genre/history', slugs: ['history'] },
+  ];
+
+  return (
+    <main className="home">
+      {spotlight && (
+        <section className="hero">
+          <div className="heroGlow" aria-hidden />
+          <div className="heroCopy">
+            <span className="kicker"><Sparkles size={14} /> BOOK OF THE DAY</span>
+            <h1>{spotlight.title}</h1>
+            <p className="heroAuthor">by {spotlight.author}{spotlightGenre ? <> · {spotlightGenre.icon} {spotlightGenre.name}</> : null}</p>
+            <p className="heroBlurb">{spotlight.description}</p>
+            <div className="heroCtas">
+              <Link className="btn btnGold btnLg" href={`/read/${spotlight.id}`}><BookOpen size={18} /> Start reading</Link>
+              <Link className="btn btnGhost btnLg" href={`/book/${spotlight.id}`}>Details</Link>
+              <SaveBookButton bookId={spotlight.id} />
+            </div>
+            <form className="heroSearch" action="/explore" method="get" role="search">
+              <input name="q" placeholder="Search titles, authors, topics…" aria-label="Search books" />
+              <button>Search</button>
+            </form>
+          </div>
+          <div className="heroShelf" aria-hidden>
+            <Link href={`/book/${spotlight.id}`} className="heroMain" tabIndex={-1}><BookCover src={spotlight.cover_url} title={spotlight.title} author={spotlight.author} size="xl" /></Link>
+            <div className="heroStack">
+              {heroStack.map(b => <Link key={b.id} href={`/book/${b.id}`} tabIndex={-1}><BookCover src={b.cover_url} title={b.title} author={b.author} size="sm" /></Link>)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <ContinueReading />
+
+      <nav className="chipRow" aria-label="Genres">
+        {genres.map(g => <Link key={g.id} href={`/genre/${g.slug}`} className="chip"><span>{g.icon}</span>{g.name}</Link>)}
+      </nav>
+
+      <Rail title="Trending on M King Reads" kicker="TOP PICKS" href="/explore?sort=featured" books={featured.slice(0, 12)} ranked />
+
+      <SponsorSlot />
+
+      <section className="africa">
+        <div className="africaCopy">
+          <span className="kicker"><Globe2 size={14} /> FROM OUR CONTINENT</span>
+          <h2>Stories from Africa</h2>
+          <p>Voices, journeys and histories from across the continent — the collection grows every month.</p>
+          <Link className="btn btnGold" href="/genre/african-literature">Explore African literature <ChevronRight size={16} /></Link>
+        </div>
+        <div className="railTrack">
+          {bySlugs(books, ['african-literature']).map(b => (
+            <Link key={b.id} href={`/book/${b.id}`} className="tile"><div className="tileCoverWrap"><BookCover src={b.cover_url} title={b.title} author={b.author} /></div><div className="tileText"><strong>{b.title}</strong><span>{b.author}</span></div></Link>
+          ))}
+        </div>
+      </section>
+
+      {rails.slice(0, 3).map(r => <Rail key={r.title} title={r.title} kicker={r.kicker} href={r.href} books={bySlugs(books, r.slugs).slice(0, 14)} />)}
+
+      <section className="plusBand">
+        <div>
+          <span className="kicker"><Crown size={14} /> M KING READS PLUS</span>
+          <h2>Read more. Pay less than a plate of jollof.</h2>
+          <ul>
+            <li><Download size={16} /> Download books, read with zero data</li>
+            <li><Headphones size={16} /> Read-Aloud: listen while you commute</li>
+            <li><Sparkles size={16} /> No ads, premium themes & reading stats</li>
+          </ul>
+        </div>
+        <Link className="btn btnGold btnLg" href="/premium">Try Plus <ChevronRight size={17} /></Link>
+      </section>
+
+      {rails.slice(3).map(r => <Rail key={r.title} title={r.title} kicker={r.kicker} href={r.href} books={bySlugs(books, r.slugs).slice(0, 14)} />)}
+
+      <SponsorSlot variant="inline" />
+
+      <Rail title="The great classics" kicker="TIMELESS" href="/genre/classics" books={bySlugs(books, ['classics', 'poetry']).slice(0, 16)} />
+
+      <section className="openShelf">
+        <div className="openShelfArt" aria-hidden><span>70k</span></div>
+        <div>
+          <span className="kicker">OPEN COLLECTION</span>
+          <h2>70,000+ more free books</h2>
+          <p>Search the full Project Gutenberg collection and read any edition right here in M King Reads.</p>
+          <Link className="btn btnGhost" href="/free-books">Browse the open collection <ChevronRight size={16} /></Link>
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
 }

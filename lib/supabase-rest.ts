@@ -1,18 +1,14 @@
-export async function supabaseRest<T>(path: string): Promise<T> {
+export async function supabaseRest<T>(path: string, revalidate = 300): Promise<T> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key) {
-    throw new Error(
-      'Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.'
-    );
+    throw new Error('Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.');
   }
 
   const response = await fetch(`${url}/rest/v1/${path}`, {
-    headers: {
-      apikey: key,
-    },
-    cache: 'no-store',
+    headers: { apikey: key },
+    next: { revalidate, tags: ['catalogue'] },
   });
 
   if (!response.ok) {

@@ -1,8 +1,47 @@
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, ExternalLink, Headphones } from 'lucide-react';
+import type { Metadata } from 'next';
+import { ArrowLeft, BookOpen, ExternalLink } from 'lucide-react';
+import { gutendexBook, personName, coverFor } from '../../../lib/gutendex';
+import BookCover from '../../components/BookCover';
+import ShareBookButton from '../../components/ShareBookButton';
+import SponsorSlot from '../../components/SponsorSlot';
+import Footer from '../../components/Footer';
 
-type Book={id:number;title:string;authors:{name:string}[];summaries:string[];subjects:string[];bookshelves:string[];languages:string[];copyright:boolean|null;formats:Record<string,string>;download_count:number};
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const b = await gutendexBook(id);
+  return { title: b ? `${b.title} — free` : 'Free book' };
+}
 
-async function getBook(id:string){const r=await fetch('https://gutendex.com/books/'+encodeURIComponent(id),{next:{revalidate:86400}});if(!r.ok)return null;return r.json() as Promise<Book>}
-
-export default async function FreeBookDetails({params}:{params:Promise<{id:string}>}){const {id}=await params;const book=await getBook(id);if(!book)return <main className="simplePage"><Link href="/free-books">← Back to free books</Link><h1>Book not found</h1></main>;const author=book.authors?.[0]?.name||'Unknown author';const cover=book.formats['image/jpeg'];const html=book.formats['text/html']||book.formats['text/html; charset=utf-8'];const epub=book.formats['application/epub+zip'];return <main><header className="topbar"><Link href="/" className="brand"><div className="logo"><BookOpen size={22}/></div><span>M King Reads</span></Link><Link href="/free-books" className="login">Free Books</Link></header><section className="section freeBookDetails"><Link href="/free-books" className="back"><ArrowLeft size={16}/> Back to free books</Link><div className="freeBookHero"><div className="freeBookLargeCover">{cover?<img src={cover} alt=""/>:<BookOpen size={48}/>}</div><div><span className="sectionKicker">PROJECT GUTENBERG · FREE TO ACCESS</span><h1>{book.title}</h1><p className="freeBookAuthor">{author}</p><p>{book.summaries?.[0]||'A free book available through Project Gutenberg.'}</p><div className="actions freeBookDetailActions">{html&&<Link className="read" href={'/free-books/'+book.id+'/read'}><BookOpen size={15}/> Read in M King Reads</Link>}{html&&<a className="secondary" href={html} target="_blank" rel="noreferrer">Official reader <ExternalLink size={15}/></a>}{epub&&<a className="read" href={epub} target="_blank" rel="noreferrer">EPUB <ExternalLink size={15}/></a>}</div><div className="freeBookMeta"><span>{book.download_count.toLocaleString()} downloads</span><span>{book.languages?.join(', ')||'English'}</span></div></div></div><div className="freeBookSubjects"><h2>Subjects & shelves</h2><p>{[...(book.subjects||[]),...(book.bookshelves||[])].slice(0,12).join(' · ')||'No subjects listed.'}</p></div><div className="sourceNote freeBookReaderNote"><strong>Read inside M King Reads</strong><span>The internal reader loads the ebook from its Project Gutenberg source at reading time. Your position, theme and bookmark are kept on this device for this free-book edition.</span></div><div className="copyrightNotice"><strong>Copyright, Public-Domain &amp; Availability Notice</strong><p>M King Reads provides access to this title through a third-party source. Copyright and public-domain status may vary by country or jurisdiction. A work that is public domain or freely available in one jurisdiction may remain protected elsewhere.</p><p>M King Reads does not independently warrant that this title is free from copyright restrictions in every country. Users are responsible for determining whether accessing, downloading, reproducing, distributing, or otherwise using the work is lawful in their jurisdiction.</p><p>Where applicable, please verify the rights, licence, and permitted uses for this edition before reproducing, distributing, publishing, or commercially using it. M King Reads does not provide legal advice.</p></div></section></main>}
+export default async function FreeBookDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const b = await gutendexBook(id);
+  const gid = id.replace(/\D/g, '');
+  const title = b?.title ?? `Project Gutenberg book #${gid}`;
+  const author = personName(b?.authors?.[0]?.name);
+  const cover = b ? coverFor(b) : `https://www.gutenberg.org/cache/epub/${gid}/pg${gid}.cover.medium.jpg`;
+  return (
+    <main className="page bookPage">
+      <Link href="/free-books" className="backLink"><ArrowLeft size={16} /> Open collection</Link>
+      <section className="bookHero">
+        <BookCover src={cover} title={title} author={author} size="xl" />
+        <div className="bookInfo">
+          <span className="pill">Open collection</span>
+          <h1>{title}</h1>
+          <p className="byline">by <strong>{author}</strong></p>
+          <div className="facts">{b && <span>{b.download_count.toLocaleString()} downloads</span>}{b?.languages?.[0] && <span>{b.languages[0].toUpperCase()}</span>}<span className="free">Free</span></div>
+          <div className="bookCtas">
+            <Link className="btn btnGold btnLg" href={`/free-books/${gid}/read`}><BookOpen size={18} /> Read now</Link>
+            <ShareBookButton title={title} />
+            <a className="btn btnGhost" href={`https://www.gutenberg.org/ebooks/${gid}`} target="_blank" rel="noreferrer">Source <ExternalLink size={14} /></a>
+          </div>
+          {b?.summaries?.[0] && <p className="bookDesc">{b.summaries[0].replace(/\(This is an automatically generated summary\.\)/, '')}</p>}
+          {b && b.subjects.length > 0 && <div className="tags">{b.subjects.slice(0, 6).map(s => <span key={s}>{s.split(' -- ')[0]}</span>)}</div>}
+          <p className="fine">Provided by Project Gutenberg. Copyright status may vary by country.</p>
+        </div>
+      </section>
+      <SponsorSlot />
+      <Footer />
+    </main>
+  );
+}

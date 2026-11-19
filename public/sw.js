@@ -1,41 +1,64 @@
-const CACHE_NAME='m-king-reads-v3';
-const APP_SHELL=['/','/login','/manifest.webmanifest','/icon-192.svg','/icon-512.svg'];
+/* M King Reads service worker */
+const SHELL = 'mkr-shell-v4';
+const OFFLINE_BOOKS = 'mkr-offline-books-v1';
+const RUNTIME = 'mkr-runtime-v4';
+const APP_SHELL = ['/', '/library', '/offline.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
 
-async function cacheResponse(request,response){
-  if(!response || !response.ok) return response;
-  const copy=response.clone();
-  const cache=await caches.open(CACHE_NAME);
-  await cache.put(request,copy);
-  return response;
-}
-
-self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(SHELL).then(c => c.addAll(APP_SHELL)).catch(() => {}));
   self.skipWaiting();
 });
 
-self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key))))
-  );
+self.addEventListener('activate', event => {
+  const keep = [SHELL, OFFLINE_BOOKS, RUNTIME];
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => !keep.includes(k)).map(k => caches.delete(k)))));
   self.clients.claim();
 });
 
-self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET') return;
+async function trim(cacheName, max) {
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+  for (let i = 0; i < keys.length - max; i++) await cache.delete(keys[i]);
+}
 
-  const url=new URL(event.request.url);
-  if(url.origin!==self.location.origin) return;
+self.addEventListener('fetch', event => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
 
-  const isNavigation=event.request.mode==='navigate';
-  const isStaticAsset=/\.(?:css|js|mjs|png|jpg|jpeg|webp|svg|ico|woff2?)$/i.test(url.pathname);
+  // Book covers from Gutenberg: cache-first so shelves look right offline.
+  if (url.hostname === 'www.gutenberg.org' && /\.cover\.(medium|small)\.jpg$/.test(url.pathname)) {
+    event.respondWith(caches.match(req).then(hit => hit || fetch(req).then(res => {
+      const copy = res.clone();
+      caches.open(RUNTIME).then(c => { c.put(req, copy); trim(RUNTIME, 300); });
+      return res;
+    }).catch(() => hit)));
+    return;
+  }
 
-  // Keep API/data responses network-only so the app does not serve stale catalogue or account data.
-  if(!isNavigation && !isStaticAsset) return;
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/admin')) return;
 
-  event.respondWith(
-    fetch(event.request)
-      .then(response=>cacheResponse(event.request,response).catch(()=>response))
-      .catch(()=>caches.match(event.request).then(response=>response || (isNavigation ? caches.match('/') : undefined)))
-  );
+  const isNav = req.mode === 'navigate';
+  const isStatic = url.pathname.startsWith('/_next/static/') || /\.(?:css|js|png|jpg|jpeg|webp|svg|ico|woff2?)$/.test(url.pathname);
+
+  if (isStatic) {
+    event.respondWith(caches.match(req).then(hit => hit || fetch(req).then(res => {
+      if (res.ok) { const copy = res.clone(); caches.open(SHELL).then(c => c.put(req, copy)); }
+      return res;
+    })));
+    return;
+  }
+
+  if (isNav) {
+    event.respondWith(fetch(req).then(res => {
+      if (res.ok && !url.pathname.startsWith('/read/')) { const copy = res.clone(); caches.open(RUNTIME).then(c => { c.put(req, copy); trim(RUNTIME, 300); }); }
+      return res;
+    }).catch(async () => {
+      const exact = await caches.match(req, { ignoreSearch: false });
+      if (exact) return exact;
+      const loose = await caches.match(url.pathname);
+      return loose || caches.match('/offline.html');
+    }));
+  }
 });

@@ -25,9 +25,9 @@ export default function ShareBookButton({ title }: { title: string }) {
   }
 
   return (
-    <button className="secondary shareBookButton" onClick={share} disabled={sharing}>
+    <button className="btn btnGhost" onClick={share} disabled={sharing}>
       {copied ? <Check size={16} /> : <Share2 size={16} />}
-      {sharing ? 'Sharing…' : copied ? 'Link copied' : 'Share book'}
+      {sharing ? 'Sharing…' : copied ? 'Link copied' : 'Share'}
     </button>
   );
 }

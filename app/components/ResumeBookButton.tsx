@@ -35,9 +35,9 @@ export default function ResumeBookButton({ bookId }: Props) {
   if (!ready || !resume) return null;
 
   return (
-    <Link className="secondary resumeBookButton" href={`/read/${bookId}?chapter=${resume.chapter}`}>
+    <Link className="btn btnGhost" href={`/read/${bookId}?chapter=${resume.chapter}`}>
       <BookOpen size={16} />
-      Continue reading · Chapter {resume.chapter}
+      Resume · Ch. {resume.chapter}
     </Link>
   );
 }

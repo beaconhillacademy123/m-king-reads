@@ -24,7 +24,7 @@ export default function SaveBookButton({ bookId }: { bookId: string }) {
     setBusy(true);
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      window.location.href = '/login';
+      window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
       return;
     }
     if (saved) {

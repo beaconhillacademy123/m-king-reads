@@ -2,8 +2,16 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import Logo from '../components/Logo';
 import { supabase } from '../../lib/supabase-browser';
+
+function nextPath() {
+  try {
+    const next = new URLSearchParams(window.location.search).get('next') || '/library';
+    return next.startsWith('/') && !next.startsWith('//') ? next : '/library';
+  } catch { return '/library'; }
+}
 
 export default function LoginForm() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
@@ -14,8 +22,9 @@ export default function LoginForm() {
   const [forgot, setForgot] = useState(false);
 
   useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('mode') === 'signup') setMode('signup');
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) window.location.href = '/library';
+      if (data.session) window.location.href = nextPath();
     });
   }, []);
 
@@ -40,14 +49,14 @@ export default function LoginForm() {
       if (error) {
         setMessage(error.message);
       } else {
-        window.location.href = '/library';
+        window.location.href = nextPath();
       }
     } else {
       const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
       if (error) {
         setMessage(error.message);
       } else if (data.session) {
-        window.location.href = '/library';
+        window.location.href = nextPath();
       } else {
         setMessage('Account created. Check your email to confirm your account, then log in.');
       }
@@ -57,7 +66,7 @@ export default function LoginForm() {
 
   return <main className="authPage">
     <div className="authCard">
-      <Link href="/" className="authBrand"><div className="logo"><BookOpen size={22}/></div><span>M King Reads</span></Link>
+      <Link href="/" className="authBrand"><Logo size={40}/><span>M King <b>Reads</b></span></Link>
       <div className="authIntro">
         <h1>{mode === 'login' ? 'Welcome back.' : 'Create your library.'}</h1>
         <p>{mode === 'login' ? 'Sign in to save books and keep your reading progress.' : 'Create a free M King Reads account to build your personal library.'}</p>
@@ -73,6 +82,7 @@ export default function LoginForm() {
       {!forgot && <button className="authSwitch" onClick={()=>{setMode(mode === 'login' ? 'signup' : 'login');setMessage('')}}>
         {mode === 'login' ? 'New to M King Reads? Create an account' : 'Already have an account? Log in'}
       </button>}
+      <ul className="authPerks"><li>Save books &amp; sync progress across devices</li><li>Daily reading streaks</li><li>Free forever — upgrade to Plus anytime</li></ul>
       <Link className="authBack" href="/">← Back to library</Link>
     </div>
   </main>;

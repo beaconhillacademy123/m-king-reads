@@ -1,6 +1,9 @@
+import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import Link from 'next/link';
 import { getBook } from '../../../lib/booknest';
 import Reader from './Reader';
+import { clampChapter, extractBody, cleanEbookHtml, fetchWithTimeout, loadGutenbergChapters } from '../../../lib/ebook';
 
 type ReaderSource = { repo: string; chapters: string[] };
 
@@ -45,23 +48,16 @@ const DRACULA_CHAPTER_LABELS = [
   "Mina Harker's Journal"
 ];
 
-function getSourceId(book: { source_url: string | null }) {
+function getSourceId(book: { source_url: string | null; gutenberg_id?: number | null }) {
+  if (book.gutenberg_id) return String(book.gutenberg_id);
   const match = book.source_url?.match(/\/ebooks\/(\d+)/);
   return match?.[1] ?? null;
 }
 
-function extractBody(html: string) {
-  const lower = html.toLowerCase();
-  const bodyStart = lower.indexOf('<body');
-  const bodyOpenEnd = bodyStart >= 0 ? html.indexOf('>', bodyStart) + 1 : 0;
-  const bodyEnd = lower.indexOf('</body>', bodyOpenEnd);
-  const body = bodyStart >= 0 && bodyEnd >= 0 ? html.slice(bodyOpenEnd, bodyEnd) : html;
-  return body;
-}
-
 function labelFromFile(file: string, index: number) {
   if (file.startsWith('chapter-')) return `Chapter ${index + 1}`;
-  return file.replace('.xhtml', '').replace(/-/g, ' ');
+  const words = file.replace('.xhtml', '').replace(/-/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
 function chapterLabel(sourceId: string | null, file: string, index: number) {
@@ -69,113 +65,69 @@ function chapterLabel(sourceId: string | null, file: string, index: number) {
   return labelFromFile(file, index);
 }
 
-function cleanExternalHtml(html: string, baseUrl?: string) {
-  const scriptPattern = new RegExp('<script[\\\\s\\\\S]*?<\\\\/script>', 'gi');
-  const stylePattern = new RegExp('<style[\\\\s\\\\S]*?<\\\\/style>', 'gi');
-  const commentPattern = new RegExp('<!--[\\\\s\\\\S]*?-->', 'g');
-  const imagePattern = /src="([^"]+)"/gi;
-
-  let cleaned = html
-    .replace(scriptPattern, '')
-    .replace(stylePattern, '')
-    .replace(commentPattern, '');
-
-  if (baseUrl) {
-    cleaned = cleaned.replace(imagePattern, (_match, src) => {
-      try {
-        return `src="${new URL(src, baseUrl).toString()}"`;
-      } catch {
-        return _match;
-      }
-    });
-  }
-
-  return cleaned;
+function Unavailable({ id, readUrl }: { id: string; readUrl: string | null }) {
+  return (
+    <main className="page narrow">
+      <div className="emptyState">
+        <strong>This book couldn&apos;t be opened right now.</strong>
+        <p>The source library is busy. Please try again in a minute.</p>
+        <div className="row"><Link className="btn btnGold" href={`/read/${id}`}>Try again</Link>
+          <Link className="btn btnGhost" href={`/book/${id}`}>Back to book</Link>
+          {readUrl && <a className="btn btnGhost" href={readUrl} target="_blank" rel="noreferrer">Open at source</a>}</div>
+      </div>
+    </main>
+  );
 }
 
-export default async function ReadPage({
-  params,
-  searchParams
-}: {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const book = await getBook(id);
+  return { title: book ? `Reading ${book.title}` : 'Reader', robots: { index: false } };
+}
+
+export default async function ReadPage({ params, searchParams }: {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ chapter?: string; bookmark?: string }>;
 }) {
   const { id } = await params;
-  const { chapter: chapterParam, bookmark: bookmarkParam } = await searchParams;
-  const resumeBookmark = bookmarkParam === '1';
+  const { chapter: chapterParam, bookmark } = await searchParams;
+  const resumeBookmark = bookmark === '1';
   const book = await getBook(id);
   if (!book) notFound();
 
   const sourceId = getSourceId(book);
   const source = sourceId ? SOURCES[sourceId] : undefined;
+  const base = `/read/${id}`;
+  const href = (n: number) => (n > 1 ? `${base}?chapter=${n}` : base);
 
   if (!source) {
-    const gutenbergUrl = sourceId
-      ? `https://www.gutenberg.org/cache/epub/${sourceId}/pg${sourceId}-images.html`
-      : null;
-
-    if (!gutenbergUrl) {
-      if (book.read_url) redirect(book.read_url);
-      return null;
-    }
-
-    const response = await fetch(gutenbergUrl, { next: { revalidate: 86400 } });
-    if (!response.ok) {
-      if (book.read_url) redirect(book.read_url);
-      return null;
-    }
-
-    const html = await response.text();
-    const content = cleanExternalHtml(extractBody(html), gutenbergUrl);
-    return <Reader
-      bookId={id}
-      title={book.title}
-      author={book.author}
-      coverUrl={book.cover_url}
-      chapter={1}
-      chapterCount={1}
-      chapterLabel="Full book"
-      chapterItems={[{ number: 1, label: 'Full book', href: `/read/${id}` }]}
-      resumeBookmark={resumeBookmark}
-      content={content}
-      sourceUrl={book.source_url}
-    />;
+    if (!sourceId) { if (book.read_url) redirect(book.read_url); notFound(); }
+    const chapters = await loadGutenbergChapters(sourceId);
+    if (!chapters) return <Unavailable id={id} readUrl={book.read_url} />;
+    const chapter = clampChapter(chapterParam, chapters.length);
+    const current = chapters[chapter - 1];
+    return <Reader bookId={id} title={book.title} author={book.author} coverUrl={book.cover_url}
+      chapter={chapter} chapterCount={chapters.length} chapterLabel={current.label}
+      chapterItems={chapters.map((c, i) => ({ number: i + 1, label: c.label, href: href(i + 1) }))}
+      resumeBookmark={resumeBookmark} content={current.content} sourceUrl={book.source_url}
+      prevHref={chapter > 1 ? href(chapter - 1) : undefined} nextHref={chapter < chapters.length ? href(chapter + 1) : undefined}
+      resumeHref={href(chapter)} />;
   }
 
-  const requested = Number(chapterParam || 1);
-  const chapter = Number.isFinite(requested) ? Math.min(source.chapters.length, Math.max(1, Math.floor(requested))) : 1;
+  const chapter = clampChapter(chapterParam, source.chapters.length);
   const file = source.chapters[chapter - 1];
   const rawUrl = `https://raw.githubusercontent.com/${source.repo}/master/src/epub/text/${file}`;
-  const response = await fetch(rawUrl);
+  let content: string | null = null;
+  try {
+    const response = await fetchWithTimeout(rawUrl, 15000, 604800);
+    if (response.ok) content = cleanEbookHtml(extractBody(await response.text()));
+  } catch { content = null; }
+  if (!content) return <Unavailable id={id} readUrl={book.read_url} />;
 
-  if (!response.ok) {
-    if (book.read_url) redirect(book.read_url);
-    return null;
-  }
-
-  const content = extractBody(await response.text());
-  const base = `/read/${id}`;
-  const prevHref = chapter > 1 ? `${base}?chapter=${chapter - 1}` : undefined;
-  const nextHref = chapter < source.chapters.length ? `${base}?chapter=${chapter + 1}` : undefined;
-  const chapterItems = source.chapters.map((chapterFile, index) => ({
-    number: index + 1,
-    label: chapterLabel(sourceId, chapterFile, index),
-    href: `${base}?chapter=${index + 1}`
-  }));
-
-  return <Reader
-    bookId={id}
-    title={book.title}
-    author={book.author}
-    coverUrl={book.cover_url}
-    chapter={chapter}
-    chapterCount={source.chapters.length}
-    chapterLabel={chapterLabel(sourceId, file, chapter - 1)}
-    chapterItems={chapterItems}
-    resumeBookmark={resumeBookmark}
-    content={content}
-    sourceUrl={book.source_url}
-    prevHref={prevHref}
-    nextHref={nextHref}
-  />;
+  return <Reader bookId={id} title={book.title} author={book.author} coverUrl={book.cover_url}
+    chapter={chapter} chapterCount={source.chapters.length} chapterLabel={chapterLabel(sourceId, file, chapter - 1)}
+    chapterItems={source.chapters.map((f, i) => ({ number: i + 1, label: chapterLabel(sourceId, f, i), href: href(i + 1) }))}
+    resumeBookmark={resumeBookmark} content={content} sourceUrl={book.source_url}
+    prevHref={chapter > 1 ? href(chapter - 1) : undefined} nextHref={chapter < source.chapters.length ? href(chapter + 1) : undefined}
+    resumeHref={href(chapter)} />;
 }
