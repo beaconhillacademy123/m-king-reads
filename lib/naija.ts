@@ -8,7 +8,7 @@ export const LANGS: { code: LangCode; name: string; native: string; hello: strin
   { code: 'ha', name: 'Hausa', native: 'Harshen Hausa', hello: 'Sannu da zuwa!', helloEn: 'Welcome!', region: 'North', tint: '#6fcf97' },
   { code: 'ig', name: 'Igbo', native: 'Asụsụ Igbo', hello: 'Nnọọ!', helloEn: 'Welcome!', region: 'South-East', tint: '#ff8ac4' },
   { code: 'pcm', name: 'Pidgin', native: 'Naija', hello: 'How far!', helloEn: "What's up!", region: 'Everywhere', tint: '#8fb8ff' },
-  { code: 'enu', name: 'Enuani', native: 'Asụsụ Enuani', hello: 'Ndeewo!', helloEn: 'Greetings!', region: 'South-South', tint: '#c4a7e7' },
+  { code: 'enu', name: 'Enuani', native: 'Asụsụ Enuani', hello: '', helloEn: '', region: 'South-South', tint: '#c4a7e7' },
 ];
 
 export const langMeta = (code: string) => LANGS.find(l => l.code === code);
