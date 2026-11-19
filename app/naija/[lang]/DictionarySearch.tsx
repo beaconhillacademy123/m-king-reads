@@ -9,7 +9,7 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
     const q = query.trim().toLocaleLowerCase();
     if (!q) return entries;
     return entries.filter(entry =>
-      [entry.term, entry.definition, entry.pronunciation, entry.part_of_speech, entry.example_native, entry.example_en, entry.source]
+      [entry.term, entry.definition, entry.pronunciation, entry.part_of_speech, entry.example_native, entry.example_en]
         .some(value => value?.toLocaleLowerCase().includes(q))
     );
   }, [entries, query]);
@@ -34,24 +34,27 @@ export default function DictionarySearch({ entries }: { entries: DictionaryEntry
         <div className="dictionaryEmpty" role="status">No matching words found.</div>
       ) : (
         <div className="dictionaryList" aria-live="polite">
-          {filtered.map(entry => (
-            <article className="dictionaryEntry" key={entry.id}>
-              <div className="dictionaryEntryHead">
-                <strong lang="enu">{entry.term}</strong>
-                {entry.part_of_speech && <small>{entry.part_of_speech}</small>}
-              </div>
-              {entry.pronunciation && <span className="dictionaryPronunciation">Pronunciation: {entry.pronunciation}</span>}
-              <span>{entry.definition}</span>
-              {entry.example_native && (
-                <div className="dictionaryExample">
-                  <span lang="enu">{entry.example_native}</span>
-                  {entry.example_en && <span>{entry.example_en}</span>}
+          {filtered.map(entry => {
+            const sourceUrl = entry.source?.match(/https?:\/\/\S+/)?.[0];
+            return (
+              <article className="dictionaryEntry" key={entry.id}>
+                <div className="dictionaryEntryHead">
+                  <strong lang="enu">{entry.term}</strong>
+                  {entry.part_of_speech && <small>{entry.part_of_speech}</small>}
                 </div>
-              )}
-              {entry.source && <a className="dictionarySource" href={entry.source} target="_blank" rel="noreferrer">Source</a>}
-                {entry.source && (() => { const url = entry.source.match(/https?:\\/\\/[^\\s]+/)?.[0]; return url ? <a className="dictionarySource" href={url} target="_blank" rel="noreferrer">Source reference</a> : <small className="dictionarySource">Source: {entry.source}</small>; })()}
-          </article>
-          ))}
+                {entry.pronunciation && <span className="dictionaryPronunciation">Pronunciation: {entry.pronunciation}</span>}
+                <span>{entry.definition}</span>
+                {entry.example_native && (
+                  <div className="dictionaryExample">
+                    <span lang="enu">{entry.example_native}</span>
+                    {entry.example_en && <span>{entry.example_en}</span>}
+                  </div>
+                )}
+                {sourceUrl && <a className="dictionarySource" href={sourceUrl} target="_blank" rel="noreferrer">Source reference</a>}
+                {entry.source && !sourceUrl && <small className="dictionarySource">Source: {entry.source}</small>}
+              </article>
+            );
+          })}
         </div>
       )}
     </div>
