@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import Logo from '../components/Logo';
 import { supabase } from '../../lib/supabase-browser';
+import { claimDevice, lockedMessage, takeLockedMessage } from '../../lib/deviceLock';
 
 function nextPath() {
   try {
@@ -18,11 +19,14 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const [forgot, setForgot] = useState(false);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('mode') === 'signup') setMode('signup');
+    const locked = takeLockedMessage();
+    if (locked) setNotice(locked);
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) window.location.href = nextPath();
     });
@@ -49,6 +53,13 @@ export default function LoginForm() {
       if (error) {
         setMessage(error.message);
       } else {
+        const claim = await claimDevice();
+        if (!claim.ok) {
+          await supabase.auth.signOut({ scope: 'local' });
+          setNotice(lockedMessage(claim));
+          setBusy(false);
+          return;
+        }
         window.location.href = nextPath();
       }
     } else {
@@ -75,6 +86,7 @@ export default function LoginForm() {
         <label>Email<input type="email" value={email} onChange={e=>setEmail(e.target.value)} required autoComplete="email" placeholder="you@example.com"/></label>
         {!forgot && <label>Password<input type="password" value={password} onChange={e=>setPassword(e.target.value)} required minLength={6} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} placeholder="At least 6 characters"/></label>}
         {forgot && <p className="authHint">Enter your email and we'll send you a secure password reset link.</p>}
+        {notice && <div className="authNotice" role="status"><b>You’re already reading on another device 📖</b><span>{notice}</span><small>Lost that device? It frees itself after 7 days without use, or write to us and we’ll help.</small></div>}
         {message && <div className="authMessage">{message}</div>}
         {forgot ? <button type="button" className="authSubmit" disabled={busy} onClick={resetPassword}>{busy ? <><Loader2 size={17} className="spin"/> Please wait...</> : 'Send reset link'}</button> : <button className="authSubmit" disabled={busy}>{busy ? <><Loader2 size={17} className="spin"/> Please wait...</> : mode === 'login' ? 'Log in' : 'Create account'}</button>}
       </form>
@@ -82,7 +94,7 @@ export default function LoginForm() {
       {!forgot && <button className="authSwitch" onClick={()=>{setMode(mode === 'login' ? 'signup' : 'login');setMessage('')}}>
         {mode === 'login' ? 'New to M King Reads? Create an account' : 'Already have an account? Log in'}
       </button>}
-      <ul className="authPerks"><li>Save books &amp; sync progress across devices</li><li>Daily reading streaks</li><li>Free forever — upgrade to Plus anytime</li></ul>
+      <ul className="authPerks"><li>Save books &amp; keep your place when you switch phones</li><li>Daily reading streaks</li><li>Free forever — upgrade to Plus anytime</li></ul>
       <Link className="authBack" href="/">← Back to library</Link>
       <p className="pvByline">A product of <b>PROMISEVISUALS</b> <span className="ng" /></p>
     </div>

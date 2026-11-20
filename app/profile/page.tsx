@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Bookmark, Crown, Flame, HeartHandshake, LibraryBig, LogOut, Megaphone, MessageSquarePlus, NotebookPen, PenLine, Settings, Shield, Target, Timer } from 'lucide-react';
 import { supabase } from '../../lib/supabase-browser';
+import { signOutAndRelease } from '../../lib/deviceLock';
 import { useAccount } from '../../lib/account';
 import { naira } from '../../lib/format';
 import Footer from '../components/Footer';
@@ -57,7 +58,7 @@ export default function ProfilePage() {
   }, [days, plus, goal]);
 
   function setDailyGoal(n: number) { setGoal(n); try { localStorage.setItem('mkr-daily-goal', String(n)); } catch {} }
-  async function logout() { await supabase.auth.signOut(); window.location.href = '/'; }
+  async function logout() { await signOutAndRelease(); window.location.href = '/'; }
 
   if (!ready || !user) return <main className="page narrow"><p className="dim">Loading your account…</p></main>;
 

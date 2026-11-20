@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './supabase-browser';
+import { startDeviceHeartbeat } from './deviceLock';
 
 export type Billing = {
   plus_monthly_ngn: number; plus_yearly_ngn: number; sponsor_weekly_ngn: number;
@@ -77,6 +78,7 @@ export function useAccount() {
       if (!alive) return;
       setSession(s);
       if (s) {
+        startDeviceHeartbeat();
         const next = await fetchSubscription(s.user.id).catch(() => null);
         if (!alive) return;
         setSub(next);

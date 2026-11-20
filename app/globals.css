@@ -1054,3 +1054,6 @@ html[data-pv-seen] .pvSplash, .pvSplash.pvGone { display: none; }
 .contributionReviewActions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 .languageContributionReview { align-items: flex-start; gap: 16px; }
 @media (max-width: 640px) { .languageContributionReview { flex-direction: column; } .contributionReviewActions { align-items: flex-start; } }
+.authNotice{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:14px;background:rgba(232,180,90,.12);border:1px solid rgba(232,180,90,.35);color:inherit;line-height:1.5;font-size:.92rem}
+.authNotice b{font-size:.98rem}
+.authNotice small{opacity:.75;font-size:.8rem}
