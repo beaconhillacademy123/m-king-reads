@@ -38,7 +38,7 @@ function* records(text, want) {
 async function download() {
   for (const url of SOURCES) {
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(120000) });
+      const res = await fetch(url, { signal: AbortSignal.timeout(90000) });
       if (!res.ok) { console.warn(`[gutenberg-index] ${url} -> ${res.status}`); continue; }
       return gunzipSync(Buffer.from(await res.arrayBuffer())).toString('utf8');
     } catch (e) { console.warn(`[gutenberg-index] ${url} failed: ${e.message}`); }

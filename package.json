@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "build": "node scripts/gutenberg-index.mjs && next build",
+    "start": "next start",
+    "gutenberg-index": "node scripts/gutenberg-index.mjs"
   },
   "dependencies": {
     "next": "latest",

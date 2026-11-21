@@ -11,7 +11,8 @@ import SponsorSlot from '../../components/SponsorSlot';
 import Footer from '../../components/Footer';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mkingreads.promisevisuals.com';
-export const revalidate = 86400;
+// Public-domain pages rarely change; refresh weekly so crawls stay cheap.
+export const revalidate = 604800;
 
 function summaryOf(b: GutenbergBook | null) {
   return b?.summaries?.[0]?.replace(/\(This is an automatically generated summary\.\)/, '').trim() || null;
