@@ -70,7 +70,7 @@ export async function drawQuoteCard(quote: string, title: string, author: string
   const maxW = w - pad * 2;
   const top = format === 'story' ? 560 : 400;
   const bottom = h - (format === 'story' ? 520 : 400);
-  let size = 72; let lines: string[] = []; let lh = 0;
+  let size = format === 'story' ? 92 : 80; let lines: string[] = []; let lh = 0;
   for (; size >= 34; size -= 2) {
     ctx.font = `600 ${size}px ${serif}`;
     lines = wrap(ctx, quote, maxW);
