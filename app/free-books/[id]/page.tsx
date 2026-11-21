@@ -20,8 +20,12 @@ function summaryOf(b: GutenbergBook | null) {
 function plain(html: string) {
   return html
     .replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ')
-    .replace(/<\/(p|div|h\d|li|br)>/gi, '\n')
-    .replace(/<[^>]+>/g, ' ')
+    // Source HTML is hard-wrapped: line breaks inside a paragraph are just spaces.
+    .replace(/\s+/g, ' ')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<\/(p|div|h\d|li|blockquote)>/gi, '\n')
+    // Inline tags (drop caps, emphasis) join their text without a gap.
+    .replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
     .replace(/&quot;/gi, '"').replace(/&#39;|&rsquo;|&#8217;/gi, '’').replace(/&lsquo;|&#8216;/gi, '‘')
     .replace(/&ldquo;|&#8220;/gi, '“').replace(/&rdquo;|&#8221;/gi, '”').replace(/&mdash;|&#8212;/gi, '—').replace(/&[a-z]+;/gi, ' ');
