@@ -11,6 +11,7 @@ import NotePad from '../../components/NotePad';
 import ShareReaderButton from '../../components/ShareReaderButton';
 import OfflineButton from '../../components/OfflineButton';
 import SponsorSlot from '../../components/SponsorSlot';
+import QuoteShare from '../../components/QuoteShare';
 
 type ChapterItem = { number: number; label: string; href: string };
 
@@ -348,6 +349,8 @@ export default function Reader({
         <span>{Math.round(overallProgress)}% of book</span>
         <span>~{minutesLeft} min left in {chapterCount > 1 ? 'chapter' : 'book'}</span>
       </footer>
+
+      <QuoteShare containerRef={bodyRef} title={title} author={author} sharePath={backHref || `/book/${bookId}`} />
 
       <NotePad bookKey={`book:${bookId}`} title={title} href={`/read/${bookId}${chapter > 1 ? `?chapter=${chapter}` : ''}`} context={chapterLabel} />
 

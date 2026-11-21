@@ -81,3 +81,17 @@ export const AUDIENCES = [
 export function forAudience(books: Book[], id: string) {
   return books.filter(b => (b.audience ?? []).includes(id));
 }
+
+/** The curated catalogue copy of a Gutenberg book, if we have one (used for canonical links). */
+export async function getBookByGutenbergId(gid: string | number) {
+  const clean = String(gid).replace(/\D/g, '');
+  if (!clean) return null;
+  const rows = await supabaseRest<Pick<Book, 'id' | 'title'>[]>(`booknest_books?select=id,title&gutenberg_id=eq.${clean}&limit=1`, 3600).catch(() => []);
+  return rows[0] ?? null;
+}
+
+/** Gutenberg ids already in the curated catalogue (they have their own /book pages). */
+export async function getCatalogueGutenbergIds() {
+  const rows = await supabaseRest<{ gutenberg_id: number | null }[]>('booknest_books?select=gutenberg_id&gutenberg_id=not.is.null&limit=2000', 86400).catch(() => []);
+  return new Set(rows.map(r => Number(r.gutenberg_id)).filter(Boolean));
+}

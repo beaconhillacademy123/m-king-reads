@@ -8,6 +8,7 @@ import CopyrightNotice from './components/CopyrightNotice';
 import AppNav from './components/AppNav';
 import BrandSplash from './components/BrandSplash';
 import MovedHome from './components/MovedHome';
+import VisitTracker from './components/VisitTracker';
 
 const display = Fraunces({ subsets: ['latin'], variable: '--font-display', display: 'swap', axes: ['opsz'] });
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OfflineStatus />
         <div className="appMain">{children}</div>
         <InstallPrompt />
+        <VisitTracker />
         <CopyrightNotice />
         <Script id="pwa-register" strategy="afterInteractive">{`if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}`}</Script>
         {ADSENSE && <Script id="adsense" async strategy="afterInteractive" crossOrigin="anonymous" src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE}`} />}

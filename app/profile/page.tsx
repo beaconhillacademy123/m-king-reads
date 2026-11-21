@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Bookmark, Crown, Flame, HeartHandshake, LibraryBig, LogOut, Megaphone, MessageSquarePlus, NotebookPen, PenLine, Settings, Shield, Target, Timer } from 'lucide-react';
+import { Bookmark, Crown, GraduationCap, Flame, HeartHandshake, LibraryBig, LogOut, Megaphone, MessageSquarePlus, NotebookPen, PenLine, Settings, Shield, Target, Timer } from 'lucide-react';
 import { supabase } from '../../lib/supabase-browser';
 import { signOutAndRelease } from '../../lib/deviceLock';
 import { useAccount } from '../../lib/account';
@@ -108,6 +108,7 @@ export default function ProfilePage() {
         <Link href="/my-suggestions"><Settings size={18} /> My suggestions</Link>
         <Link href="/support"><HeartHandshake size={18} /> Support M King Reads</Link>
         <Link href="/advertise"><Megaphone size={18} /> Advertise with us</Link>
+        <Link href="/teach"><GraduationCap size={18} /> Class reading lists (teachers)</Link>
         <Link href="/notes" className="adminLink"><NotebookPen size={18} /> My notes</Link>
         <Link href="/write" className="adminLink"><PenLine size={18} /> Writer Studio — publish a novel</Link>
         {admin && <Link href="/admin" className="adminLink"><Shield size={18} /> Admin dashboard</Link>}

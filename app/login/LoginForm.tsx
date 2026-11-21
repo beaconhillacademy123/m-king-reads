@@ -63,7 +63,7 @@ export default function LoginForm() {
         window.location.href = nextPath();
       }
     } else {
-      const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
+      const { data, error } = await supabase.auth.signUp({ email: email.trim(), password, options: { data: { signup_app: 'm-king-reads' } } });
       if (error) {
         setMessage(error.message);
       } else if (data.session) {
