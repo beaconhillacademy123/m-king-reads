@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpen, Clock, ExternalLink, Globe2, CalendarDays } from '
 import SaveBookButton from '../../components/SaveBookButton';
 import ResumeBookButton from '../../components/ResumeBookButton';
 import ShareBookButton from '../../components/ShareBookButton';
+import AddToListButton from '../../components/AddToListButton';
 import OfflineButton from '../../components/OfflineButton';
 import BookCover from '../../components/BookCover';
 import Rail from '../../components/Rail';
@@ -66,6 +67,7 @@ export default async function BookPage({ params }: { params: Promise<{ id: strin
             <SaveBookButton bookId={id} />
             <OfflineButton bookId={id} title={book.title} author={book.author} coverUrl={book.cover_url} urls={[`/read/${id}`]} />
             <ShareBookButton title={book.title} />
+            <AddToListButton book={{ ref: `cat:${book.id}`, title: book.title, author: book.author, cover: book.cover_url }} />
           </div>
           {book.description && <p className="bookDesc">{book.description}</p>}
           <p className="fine">{book.source_name ?? 'Open source'} edition. {book.license}{' '}

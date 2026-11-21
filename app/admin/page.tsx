@@ -6,6 +6,7 @@ import { Check, Crown, Loader2, Plus, RefreshCw, Star, Trash2, X } from 'lucide-
 import { supabase } from '../../lib/supabase-browser';
 import { naira } from '../../lib/format';
 import LanguageContributionsAdmin from './LanguageContributionsAdmin';
+import TrafficPanel from './TrafficPanel';
 
 type Stats = { readers: number; plus_active: number; revenue_30d: number; revenue_total: number; pending: number; books: number; reading_minutes_7d: number };
 type Payment = { id: string; email: string; kind: string; billing_period: string | null; amount: number; payment_reference: string; payer_name: string | null; note: string | null; status: string; created_at: string; book_title?: string | null };
@@ -76,6 +77,7 @@ export default function AdminPage() {
             <div className="stat"><strong>{stats.books}</strong><span>Books in catalogue</span></div>
             <div className="stat"><strong>{stats.reading_minutes_7d.toLocaleString()}</strong><span>Minutes read (7 days)</span></div>
           </section>
+          <TrafficPanel />
           <GrantPlus flash={flash} />
         </>
       )}

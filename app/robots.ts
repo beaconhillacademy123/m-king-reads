@@ -1,5 +1,8 @@
 import type { MetadataRoute } from 'next';
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mkingreads.promisevisuals.com';
+import { FREE_BOOK_SITEMAPS, SITE } from '../lib/seo';
 export default function robots(): MetadataRoute.Robots {
-  return { rules: [{ userAgent: '*', allow: '/', disallow: ['/admin', '/api/', '/read/', '/profile', '/library'] }], sitemap: `${SITE}/sitemap.xml` };
+  return {
+    rules: [{ userAgent: '*', allow: '/', disallow: ['/admin', '/api/', '/read/', '/profile', '/library', '/list/'] }],
+    sitemap: [`${SITE}/sitemap.xml`, ...Array.from({ length: FREE_BOOK_SITEMAPS }, (_, i) => `${SITE}/free-books/sitemap/${i}.xml`)],
+  };
 }
