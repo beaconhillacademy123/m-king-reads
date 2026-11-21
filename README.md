@@ -4,7 +4,7 @@
 
 A mobile-first digital library for Nigeria and the world: thousands of free classic and African books, a beautiful reader, offline downloads, Read-Aloud and an installable app. Built with Next.js 16, Supabase and Vercel.
 
-**Live app:** https://mkingreads.vercel.app
+**Live app:** https://mkingreads.promisevisuals.com
 
 ## What's inside
 
@@ -41,7 +41,7 @@ Sign in with an account listed in `booknest_admins`, then open **Profile → Adm
 
 The app is a Progressive Web App, so it can be wrapped for Play as a Trusted Web Activity:
 
-1. Go to https://www.pwabuilder.com, enter `https://mkingreads.vercel.app`, and generate the **Android** package (package name e.g. `ng.mkingreads.app`).
+1. Go to https://www.pwabuilder.com, enter `https://mkingreads.promisevisuals.com`, and generate the **Android** package (package name e.g. `ng.mkingreads.app`).
 2. PWABuilder gives you a signing key and an `assetlinks.json`. Put that file at `public/.well-known/assetlinks.json` and redeploy so the app opens without a browser bar.
 3. Upload the `.aab` to the Play Console.
 

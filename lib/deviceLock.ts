@@ -1,6 +1,7 @@
 'use client';
 
 import { supabase } from './supabase-browser';
+import { isOldHome } from './home';
 
 /** Friendly name for this device, shown to the account owner if they try to sign in elsewhere. */
 export function deviceLabel(): string {
@@ -16,6 +17,7 @@ export type ClaimResult = { ok: boolean; device?: string; last_seen?: string };
 const LOCK_MSG = 'mkr-device-lock';
 
 export async function claimDevice(): Promise<ClaimResult> {
+  if (isOldHome()) return { ok: true }; // the old address only forwards to the new one
   const { data, error } = await supabase.rpc('booknest_device_claim', { p_label: deviceLabel() });
   if (error || !data) return { ok: true }; // never lock someone out because of a network blip
   return data as ClaimResult;

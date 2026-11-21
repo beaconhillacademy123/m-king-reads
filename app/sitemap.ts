@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getCatalogue, getGenres } from '../lib/booknest';
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mkingreads.vercel.app';
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mkingreads.promisevisuals.com';
 export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -7,11 +7,12 @@ import InstallPrompt from './components/InstallPrompt';
 import CopyrightNotice from './components/CopyrightNotice';
 import AppNav from './components/AppNav';
 import BrandSplash from './components/BrandSplash';
+import MovedHome from './components/MovedHome';
 
 const display = Fraunces({ subsets: ['latin'], variable: '--font-display', display: 'swap', axes: ['opsz'] });
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mkingreads.vercel.app';
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mkingreads.promisevisuals.com';
 const ADSENSE = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 export const metadata: Metadata = {
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${display.variable} ${sans.variable}`} suppressHydrationWarning>
       <body>
+        <MovedHome />
         <BrandSplash />
         <AppNav />
         <OfflineStatus />

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mkingreads.vercel.app';
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mkingreads.promisevisuals.com';
 export default function robots(): MetadataRoute.Robots {
   return { rules: [{ userAgent: '*', allow: '/', disallow: ['/admin', '/api/', '/read/', '/profile', '/library'] }], sitemap: `${SITE}/sitemap.xml` };
 }
